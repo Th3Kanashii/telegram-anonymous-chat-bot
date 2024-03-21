@@ -15,7 +15,7 @@ RUN set +x \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
-COPY pyproject.toml poetry.lock /app/
+COPY pyproject.toml /app/
 RUN poetry install
 
 # Prepare entrypoint
