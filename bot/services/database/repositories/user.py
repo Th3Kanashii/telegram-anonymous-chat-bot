@@ -38,6 +38,7 @@ class UserRepository(BaseRepository):
         result: Result[tuple[int]] = await self._session.execute(query)
         companions: Optional[List[int]] = list(result.scalars().all())
         companion: Optional[int] = secrets.choice(companions) if companions else None
+
         return cast(Optional[DBUser], await self.get(user_id=companion))
 
     async def update_companions(
@@ -98,4 +99,4 @@ class UserRepository(BaseRepository):
 
         :return: The users.
         """
-        return await self._session.scalar(select(func.count()).select_from(DBUser))
+        return cast(int, await self._session.scalar(select(func.count()).select_from(DBUser)))
