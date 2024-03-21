@@ -40,11 +40,11 @@ top = 🍪 <b>{ $name }, top cookie earners</b> 🍪
 
 command-language = 🌐 Change language
 command-profile = 👤 Your profile
-command-link = 🔗 Send link to your profile to the conversation partner
+command-link = 🔗 Send you're profile link a companion
 command-search = 🔍 Search for conversation partner
 command-next = ➡️ Next conversation partner
 command-stop = 🛑 Stop search or dialogue
-command-chan = 💌 Send a message to your crush
+command-chan = 💌 Send chan
 command-dice = 🎲 Roll the dice
 command-top = 🏆 Top cookie earners
 

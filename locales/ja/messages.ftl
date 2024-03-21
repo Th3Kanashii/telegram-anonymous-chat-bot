@@ -44,7 +44,7 @@ command-link = 🔗 あなたのプロフィールへのリンクを会話相手
 command-search = 🔍 会話相手を検索
 command-next = ➡️ 次の会話相手
 command-stop = 🛑 検索または対話を停止
-command-chan = 💌 かわいいメッセージを送信
+command-chan = 💌 ひよこを送る
 command-dice = 🎲 サイコロを振る
 command-top = 🏆 クッキーのトップ
 
