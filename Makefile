@@ -23,9 +23,10 @@ i18n:
 
 .PHONY: migration
 migration:
-	poetry run alembic revision --autogenerate -m $(message)
+	poetry run alembic revision --autogenerate -m $(message) --rev_id $(rev_id)
 
 .PHONY: migrate
+migrate:
 	poetry run alembic upgrade head
 
 .PHONY: app-build
