@@ -19,6 +19,7 @@ fluent-runtime = "^0.4.0"
 pydantic-settings = "^2.2.1"
 sqlalchemy = "^2.0.28"
 cachetools = "^5.3.3"
+betterlogging = "^1.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
