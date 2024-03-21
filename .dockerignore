@@ -1,8 +1,12 @@
 # Project
+.vscode/
 .idea/
 .github/
 .*ignore
+.*yaml
+.editorconfig
 Makefile
+LICENCE
 README.md
 
 # Cache
