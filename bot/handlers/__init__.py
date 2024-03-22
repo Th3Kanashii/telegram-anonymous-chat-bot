@@ -1,5 +1,7 @@
 from aiogram import Dispatcher, F
 
+from . import callbacks, chatting, menu, next, search, stop
+
 
 def _setup_routers(dispatcher: Dispatcher) -> None:
     """
@@ -7,8 +9,6 @@ def _setup_routers(dispatcher: Dispatcher) -> None:
 
     :param dispatcher: An instance of the Dispatcher for the Telegram bot.
     """
-    from . import callbacks, chatting, menu, next, search, stop
-
     dispatcher.message.filter(F.chat.type == "private")
     dispatcher.include_routers(
         menu.router,

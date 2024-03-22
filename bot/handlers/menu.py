@@ -11,8 +11,8 @@ from aiogram.methods import TelegramMethod
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram_i18n import I18nContext
 
-from ..commands import set_commands
 from ..keyboards import builder_reply, dialog, link_profile, select_language
+from ..ui_commands import set_commands
 
 if TYPE_CHECKING:
     from ..services.database import DBUser, Repository, UoW

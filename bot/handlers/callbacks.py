@@ -7,8 +7,8 @@ from aiogram.methods import TelegramMethod
 from aiogram.types import BotCommandScopeChat, CallbackQuery, ReplyKeyboardRemove
 from aiogram_i18n import I18nContext
 
-from ..commands import set_commands
 from ..keyboards import Language
+from ..ui_commands import set_commands
 
 if TYPE_CHECKING:
     from ..services.database import DBUser
