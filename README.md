@@ -47,7 +47,7 @@ poetry install
 **Make migration script:**
 
 ```bash
-make migration message=MESSAGE_WHAT_THE_MIGRATION_DOES
+make migration message=MESSAGE_WHAT_THE_MIGRATION_DOES rev_id=ID_MIGRATION
 ```
 
 **Run migrations:**
