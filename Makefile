@@ -23,7 +23,7 @@ i18n:
 
 .PHONY: migration
 migration:
-	poetry run alembic revision --autogenerate -m $(message) --rev_id $(rev_id)
+	poetry run alembic revision --autogenerate -m $(message) --rev-id $(rev_id)
 
 .PHONY: migrate
 migrate:
