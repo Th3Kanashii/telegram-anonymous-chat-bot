@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional
 
 from aiogram import BaseMiddleware, Bot
-from aiogram.types import Message, User
+from aiogram.types import Message
 from aiogram_i18n import I18nContext
 
 from ...enums import UserStatus
@@ -26,9 +26,8 @@ class SearchCompanionMiddleware(BaseMiddleware):
         data: dict[str, Any],
     ) -> Optional[Any]:
         i18n: I18nContext = data["i18n"]
-        aiogram_user: Optional[User] = data.get("event_from_user")
         repository: Repository = data["repository"]
-        user: Optional[DBUser] = await repository.user.get(user_id=aiogram_user.id)
+        user: DBUser = data["user"]
 
         if user.status == UserStatus.ACTIVE:
             return event.answer(

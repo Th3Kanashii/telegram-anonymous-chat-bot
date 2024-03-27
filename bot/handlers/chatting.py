@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Final, Optional
+from typing import TYPE_CHECKING, Any, Final
 
 from aiogram import Bot, Router
-from aiogram.methods import TelegramMethod
 from aiogram.types import Message, MessageReactionUpdated
 from aiogram_i18n import I18nContext
 
@@ -12,11 +11,11 @@ from ..keyboards import dialog
 if TYPE_CHECKING:
     from ..services.database import DBUser
 
-router: Final[Router] = Router(name=__name__)
+chatting_router: Final[Router] = Router(name=__name__)
 
 
-@router.message(flags={"throttling_key": "chatting"})
-async def chatting(message: Message, i18n: I18nContext, user: DBUser) -> TelegramMethod[Any]:
+@chatting_router.message(flags={"throttling_key": "chatting"})
+async def chatting(message: Message, i18n: I18nContext, user: DBUser) -> Any:
     """
     Process the chatting.
 
@@ -30,10 +29,8 @@ async def chatting(message: Message, i18n: I18nContext, user: DBUser) -> Telegra
     return message.delete()
 
 
-@router.message_reaction()
-async def chatting_reaction(
-    message: MessageReactionUpdated, bot: Bot, user: DBUser
-) -> Optional[bool]:
+@chatting_router.message_reaction()
+async def chatting_reaction(message: MessageReactionUpdated, bot: Bot, user: DBUser) -> Any:
     """
     Process the reaction to the chatting message.
 

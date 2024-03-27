@@ -1,6 +1,10 @@
 from aiogram import Dispatcher, F
 
-from . import callbacks, chatting, menu, next, search, stop
+from .chatting import chatting_router
+from .menu import menu_router
+from .next import next_router
+from .search import search_router
+from .stop import stop_router
 
 
 def _setup_routers(dispatcher: Dispatcher) -> None:
@@ -11,12 +15,11 @@ def _setup_routers(dispatcher: Dispatcher) -> None:
     """
     dispatcher.message.filter(F.chat.type == "private")
     dispatcher.include_routers(
-        menu.router,
-        stop.router,
-        search.router,
-        next.router,
-        callbacks.router,
-        chatting.router,
+        menu_router,
+        search_router,
+        next_router,
+        stop_router,
+        chatting_router,
     )
 
 

@@ -7,24 +7,23 @@ from typing import TYPE_CHECKING, Any, Dict, Final, List, Optional
 from aiogram import Bot, Router
 from aiogram.enums.dice_emoji import DiceEmoji
 from aiogram.filters import Command, CommandStart
-from aiogram.methods import TelegramMethod
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import BotCommandScopeChat, CallbackQuery, Message, ReplyKeyboardRemove
 from aiogram_i18n import I18nContext
 
-from ..keyboards import builder_reply, dialog, link_profile, select_language
+from ..keyboards import Language, builder_reply, dialog, link_profile, select_language
 from ..ui_commands import set_commands
 
 if TYPE_CHECKING:
     from ..services.database import DBUser, Repository, UoW
 
 flags: Final[Dict[str, str]] = {"throttling_key": "default"}
-router: Final[Router] = Router(name=__name__)
+menu_router: Final[Router] = Router(name=__name__)
 
 
-@router.message(CommandStart(), flags=flags)
+@menu_router.message(CommandStart(), flags=flags)
 async def start_command(
     message: Message, bot: Bot, i18n: I18nContext, user: DBUser, commands: Optional[bool] = False
-) -> TelegramMethod[Any]:
+) -> Any:
     """
     Handle the /start command.
 
@@ -44,10 +43,8 @@ async def start_command(
     )
 
 
-@router.message(Command("language"), flags=flags)
-async def language_command(
-    message: Message, i18n: I18nContext, user: DBUser
-) -> TelegramMethod[Any]:
+@menu_router.message(Command("language"), flags=flags)
+async def language_command(message: Message, i18n: I18nContext, user: DBUser) -> Any:
     """
     Handle the /language command.
     Show the language selection keyboard.
@@ -60,8 +57,8 @@ async def language_command(
     return message.answer(i18n.get("language", name=user.mention), reply_markup=select_language())
 
 
-@router.message(Command("help"), flags=flags)
-async def help_command(message: Message, i18n: I18nContext, user: DBUser) -> TelegramMethod[Any]:
+@menu_router.message(Command("help"), flags=flags)
+async def help_command(message: Message, i18n: I18nContext, user: DBUser) -> Any:
     """
     Handle the /help command.
     Show the help message.
@@ -76,10 +73,8 @@ async def help_command(message: Message, i18n: I18nContext, user: DBUser) -> Tel
     )
 
 
-@router.message(Command("link"), flags=flags)
-async def link_command(
-    message: Message, bot: Bot, i18n: I18nContext, user: DBUser
-) -> TelegramMethod[Any]:
+@menu_router.message(Command("link"), flags=flags)
+async def link_command(message: Message, bot: Bot, i18n: I18nContext, user: DBUser) -> Any:
     """
     Handle the /link command.
     Send link to the companion.
@@ -100,10 +95,8 @@ async def link_command(
     return message.answer(text=user.mention)
 
 
-@router.message(Command("chan"), flags=flags)
-async def chan_command(
-    message: Message, i18n: I18nContext, user: DBUser, uow: UoW
-) -> TelegramMethod[Any]:
+@menu_router.message(Command("chan"), flags=flags)
+async def chan_command(message: Message, i18n: I18nContext, user: DBUser, uow: UoW) -> Any:
     """
     Handle the /chan command.
     Send a random 4chan image.
@@ -123,17 +116,15 @@ async def chan_command(
         "https://imgur.com/a/lSwCP2O",
         "https://imgur.com/a/dNWN9Gq",
     ]
-    chan_index = secrets.randbelow(len(chans))
+    chan_index: int = secrets.randbelow(len(chans))
     await uow.commit()
     return message.answer_photo(
         photo=chans[chan_index], caption=i18n.get("chans-info", chan=chan_index)
     )
 
 
-@router.message(Command("profile"), flags=flags)
-async def profile_command(
-    message: Message, i18n: I18nContext, user: DBUser
-) -> TelegramMethod[Any]:
+@menu_router.message(Command("profile"), flags=flags)
+async def profile_command(message: Message, i18n: I18nContext, user: DBUser) -> Any:
     """
     Handle the /profile command.
     Show the user's profile.
@@ -151,10 +142,10 @@ async def profile_command(
     )
 
 
-@router.message(Command("top"), flags=flags)
+@menu_router.message(Command("top"), flags=flags)
 async def top_command(
     message: Message, i18n: I18nContext, user: DBUser, repository: Repository
-) -> TelegramMethod[Any]:
+) -> Any:
     top_users: Dict[str, Any] = await repository.user.top()
     users: int = await repository.user.all()
     position: int = await repository.user.position(balance=user.balance)
@@ -164,10 +155,8 @@ async def top_command(
     )
 
 
-@router.message(Command("dice"), flags={"throttling_key": "dice"})
-async def dice_command(
-    message: Message, i18n: I18nContext, user: DBUser, uow: UoW
-) -> TelegramMethod[Any]:
+@menu_router.message(Command("dice"), flags={"throttling_key": "dice"})
+async def dice_command(message: Message, i18n: I18nContext, user: DBUser, uow: UoW) -> Any:
     """
     Handle the /dice command.
     Send a dice and add its value to the user's balance.
@@ -178,9 +167,33 @@ async def dice_command(
     :param uow: Unit of work.
     :return: The responce.
     """
-    dice = await message.answer_dice(emoji=DiceEmoji.DICE)
+    dice: Message = await message.answer_dice(emoji=DiceEmoji.DICE)
     await asyncio.sleep(2)
 
     user.balance += dice.dice.value
     await uow.commit()
     return dice.reply(text=i18n.get("dice", number=dice.dice.value, balance=user.balance))
+
+
+@menu_router.callback_query(Language.filter())
+async def language_changed(
+    callback: CallbackQuery, callback_data: Language, bot: Bot, i18n: I18nContext, user: DBUser
+) -> Any:
+    """
+    Handle the language selection callback.
+    Change the user's language.
+
+    :param callback: The callback.
+    :param callback_data: The callback data.
+    :param i18n: The i18n context.
+    :param user: The user.
+    :return: The response.
+    """
+    await i18n.set_locale(locale=callback_data.language)
+    await bot.delete_my_commands(scope=BotCommandScopeChat(chat_id=user.id))
+    await set_commands(bot=bot, i18n=i18n, chat_id=user.id)
+    await callback.message.delete()
+
+    return callback.message.answer(
+        text=i18n.get("help", name=user.mention), reply_markup=ReplyKeyboardRemove()
+    )

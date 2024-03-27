@@ -26,11 +26,3 @@ class UoW:
         """
         self._session.add_all(instances)
         await self._session.commit()
-
-    async def delete(self, *instances: Base) -> None:
-        """
-        Delete the given instances from the database.
-        """
-        for instance in instances:
-            await self._session.delete(instance)
-        await self._session.commit()
