@@ -42,6 +42,15 @@ def _setup_outer_middlewares(dispatcher: Dispatcher, config: Config) -> None:
     i18n_middleware.setup(dispatcher=dispatcher)
 
 
+def _setup_inner_middlewares(dispatcher: Dispatcher) -> None:
+    """
+    Sets up inner middlewares for the dispatcher.
+
+    :param dispatcher: An instance of the Dispatcher for the Telegram bot.
+    """
+    dispatcher.message.middleware(ThrottlingMiddleware())
+
+
 def create_dispatcher(config: Config) -> Dispatcher:
     """
     Creates and configures a Telegram bot dispatcher.
@@ -54,6 +63,7 @@ def create_dispatcher(config: Config) -> Dispatcher:
     )
     _setup_routers(dispatcher=dispatcher)
     _setup_outer_middlewares(dispatcher=dispatcher, config=config)
+    _setup_inner_middlewares(dispatcher=dispatcher)
     return dispatcher
 
 
