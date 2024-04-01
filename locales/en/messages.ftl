@@ -15,7 +15,10 @@ help = 😍 <b>{ $name }, commands:
         🛑 /stop | <code>stop</code> ❯ stop searching
         💌 /chan | <code>chan</code> ❯ get a cute picture
         🎲 /dice | <code>dice</code> ❯ roll the dice
-        🏆 /top | <code>top</code> ❯ user ranking</b>
+        🏆 /top | <code>top</code> ❯ user ranking
+
+        🥰 If <u>You</u> liked the project, please give it a ⭐. It's easy for <u>You</u>, but means a lot to me.
+        🔗 Project link: https://github.com/Th3Kanashii/telegram-anonymous-chat-bot</b>
 
 language = 🌐 <b>{ $name }, what language would you like me to speak?</b>
 
