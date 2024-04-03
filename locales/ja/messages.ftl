@@ -17,8 +17,7 @@ help = 😍 <b>{ $name }さん、コマンド:
         🎲 /dice | <code>サイコロ</code> ❯ サイコロを振る
         🏆 /top | <code>トップ</code> ❯ ユーザーのランキング
 
-        🥰 もしこのプロジェクトがお気に召しましたら、⭐をつけてください。私にとって嬉しいです
-        🔗 プロジェクトのリンク： https://github.com/Th3Kanashii/telegram-anonymous-chat-bot</b>
+        🔗 プロジェクトのリンク： <a href='https://github.com/Th3Kanashii/telegram-anonymous-chat-bot'>GitHub</a></b>
 
 language = 🌐 <b>{ $name }、私はどの言語で話すことを望みますか？</b>
 
@@ -34,9 +33,9 @@ dice = 🎲 <b><u>あなた</u>の出目: <code>{ $number }</code>
 
 top = 🍪 <b>{ $name }, クッキーのトップ</b> 🍪
 
-      ❯❯ 1. { $first_user } ⇏ { $first_cookie } 🍪
-      ❯❯ 2. { $second_user } ⇏ { $second_cookie } 🍪
-      ❯❯ 3. { $third_user } ⇏ { $third_cookie } 🍪
+      ❯❯ 1. 🕶️ ⇏ { $first_cookie } 🍪
+      ❯❯ 2. 🕶️ ⇏ { $second_cookie } 🍪
+      ❯❯ 3. 🕶️ ⇏ { $third_cookie } 🍪
 
       ❤️ <b>総ユーザー数: { $users }
       🪑 トップでのあなたの位置: { $position }</b>

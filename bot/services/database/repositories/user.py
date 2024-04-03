@@ -1,5 +1,5 @@
 import secrets
-from typing import Any, Dict, List, Optional, cast
+from typing import Dict, List, Optional, cast
 
 from sqlalchemy import Result, Select, and_, func, select
 
@@ -61,24 +61,21 @@ class UserRepository(BaseRepository):
         user.companion, companion.companion = (None, None) if is_stop else (companion.id, user.id)
         user.status, companion.status = user_status.value, companion_status.value
 
-    async def top(self) -> Dict[str, Any]:
+    async def top(self) -> Dict[str, int]:
         """
         Get the top 3 users.
 
         :return: The top 3 users.
         """
         result: Result[tuple[str, int]] = await self._session.execute(
-            select(DBUser.name, DBUser.balance).order_by(DBUser.balance.desc())
+            select(DBUser.balance).order_by(DBUser.balance.desc()).limit(3)
         )
-        users: List[tuple[str, int]] = list(result.all())
+        cookies: List[int] = [row[0] for row in result]
 
         return {
-            "first_user": users[0][0] if users else "🤖 Roboto",
-            "second_user": users[1][0] if len(users) > 1 else "🤖 Roboto",
-            "third_user": users[2][0] if len(users) > 2 else "🤖 Roboto",
-            "first_cookie": users[0][1] if users else 0,
-            "second_cookie": users[1][1] if len(users) > 1 else 0,
-            "third_cookie": users[2][1] if len(users) > 2 else 0,
+            "first_cookie": cookies[0] if len(cookies) else 0,
+            "second_cookie": cookies[1] if len(cookies) > 1 else 0,
+            "third_cookie": cookies[2] if len(cookies) > 2 else 0,
         }
 
     async def position(self, balance: int) -> int:

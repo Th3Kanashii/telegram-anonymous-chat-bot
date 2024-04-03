@@ -17,8 +17,7 @@ help = 😍 <b>{ $name }, commands:
         🎲 /dice | <code>dice</code> ❯ roll the dice
         🏆 /top | <code>top</code> ❯ user ranking
 
-        🥰 If <u>You</u> liked the project, please give it a ⭐. It's easy for <u>You</u>, but means a lot to me.
-        🔗 Project link: https://github.com/Th3Kanashii/telegram-anonymous-chat-bot</b>
+        🔗 Project link: <a href='https://github.com/Th3Kanashii/telegram-anonymous-chat-bot'>GitHub</a></b>
 
 language = 🌐 <b>{ $name }, what language would you like me to speak?</b>
 
@@ -34,9 +33,9 @@ dice = 🎲 <b><u>Your</u> roll: <code>{ $number }</code>
 
 top = 🍪 <b>{ $name }, top cookie earners</b> 🍪
 
-      ❯❯ 1. { $first_user } ⇏ { $first_cookie } 🍪
-      ❯❯ 2. { $second_user } ⇏ { $second_cookie } 🍪
-      ❯❯ 3. { $third_user } ⇏ { $third_cookie } 🍪
+      ❯❯ 1. 🕶️ ⇏ { $first_cookie } 🍪
+      ❯❯ 2. 🕶️ ⇏ { $second_cookie } 🍪
+      ❯❯ 3. 🕶️ ⇏ { $third_cookie } 🍪
 
       ❤️ <b>Total users: { $users }
       🪑 Your position in top: { $position }</b>

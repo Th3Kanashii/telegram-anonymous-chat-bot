@@ -17,8 +17,7 @@ help = 😍 <b>{ $name }, команди:
         🎲 /dice | <code>кубики</code> ❯ кинути кубик
         🏆 /top | <code>топ</code> ❯ рейтинг користувачів
 
-        🥰 Якщо <u>Вам</u>, сподобався проєкт, поставте ⭐. <u>Вам</u>, нескладно, мені приємно.
-        🔗 Посилання на проєкт: https://github.com/Th3Kanashii/telegram-anonymous-chat-bot</b>
+        🔗 Посилання на проєкт: <a href='https://github.com/Th3Kanashii/telegram-anonymous-chat-bot'>GitHub</a></b>
 
 language = 🌐 <b>{ $name }, якою мовою ти хочеш, щоб я говорив?</b>
 
@@ -34,9 +33,9 @@ dice = 🎲 <b><u>Вам</u>, випало число: <code>{ $number }</code>
 
 top = 🍪 <b>{ $name }, топ за печивом</b> 🍪
 
-      ❯❯ 1. { $first_user } ⇏ { $first_cookie } 🍪
-      ❯❯ 2. { $second_user } ⇏ { $second_cookie } 🍪
-      ❯❯ 3. { $third_user } ⇏ { $third_cookie } 🍪
+      ❯❯ 1. 🕶️ ⇏ { $first_cookie } 🍪
+      ❯❯ 2. 🕶️ ⇏ { $second_cookie } 🍪
+      ❯❯ 3. 🕶️ ⇏ { $third_cookie } 🍪
 
       ❤️ <b>Всього користувачів: { $users }
       🪑 Ваше місце у топі: { $position }</b>
