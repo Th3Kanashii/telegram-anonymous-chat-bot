@@ -38,7 +38,6 @@ def _setup_outer_middlewares(dispatcher: Dispatcher, config: Config) -> None:
 
     dispatcher.update.outer_middleware(DBSessionMiddleware(session_pool=pool))
     dispatcher.update.outer_middleware(UserMiddleware())
-    dispatcher.message.middleware(ThrottlingMiddleware())
     i18n_middleware.setup(dispatcher=dispatcher)
 
 

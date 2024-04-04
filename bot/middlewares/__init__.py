@@ -1,5 +1,10 @@
-from .inner import NextCompanionMiddleware, SearchCompanionMiddleware, StopCompanionMiddleware
-from .outer import DBSessionMiddleware, ThrottlingMiddleware, UserManager, UserMiddleware
+from .inner import (
+    NextCompanionMiddleware,
+    SearchCompanionMiddleware,
+    StopCompanionMiddleware,
+    ThrottlingMiddleware,
+)
+from .outer import DBSessionMiddleware, UserManager, UserMiddleware
 
 __all__ = [
     "DBSessionMiddleware",

@@ -3,6 +3,8 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram_i18n import I18nContext
 
+from ..enums import Locale
+
 
 class Language(CallbackData, prefix="language"):
     """
@@ -21,9 +23,9 @@ def select_language() -> InlineKeyboardMarkup:
     keyboard: InlineKeyboardBuilder = InlineKeyboardBuilder()
     keyboard.row(
         *[
-            InlineKeyboardButton(text="🇬🇧", callback_data=Language(language="en").pack()),
-            InlineKeyboardButton(text="🇺🇦", callback_data=Language(language="uk").pack()),
-            InlineKeyboardButton(text="🇯🇵", callback_data=Language(language="ja").pack()),
+            InlineKeyboardButton(text="🇬🇧", callback_data=Language(language=Locale.EN).pack()),
+            InlineKeyboardButton(text="🇺🇦", callback_data=Language(language=Locale.UK).pack()),
+            InlineKeyboardButton(text="🇯🇵", callback_data=Language(language=Locale.JA).pack()),
         ],
         width=2,
     )
