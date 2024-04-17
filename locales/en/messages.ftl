@@ -68,12 +68,12 @@ chat-with-companion = 💬 <b>You already have a conversation partner!</b>
 send-link = 🔗 <b>Your conversation partner has sent a link to their profile!</b>
 companion-linked = 🔗 <b>Link to your profile sent!</b>
 
-you-leave = 💬 <b><u>You</u> left the chat!</b>
-companion-leave = 💬 <b>Your conversation partner left the chat!
+you-leave = 🕊 <b><u>You</u> left the chat!</b>
+companion-leave = 🕊 <b>Your conversation partner left the chat!
                   🔍 Searching for <u>you</u> a new conversation partner...</b>
 
 not-enough-balance = 😔 <b>{ $name }, insufficient cookies
-                     💸 Needed: 99 cookies
+                     💸 Needed: 999 cookies
                      🍪 Balance: { $balance } cookies
 
                      🎲 Play dice (/dice) to earn cookies</b> 🍪

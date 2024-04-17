@@ -68,12 +68,12 @@ chat-with-companion = 💬 <b>すでに相手がいます。</b>
 send-link = 🔗 <b>相手がプロフィールのリンクを送信しました!</b>
 companion-linked = 🔗 <b>プロフィールのリンクが送信されました!</b>
 
-you-leave = 💬 <b>チャットを退出しました!</b>
-companion-leave = 💬 <b>相手がチャットを退出しました。
+you-leave = 🕊 <b>チャットを退出しました!</b>
+companion-leave = 🕊 <b>相手がチャットを退出しました。
                   🔍 新しい相手を探しています...</b>
 
 not-enough-balance = 😔 <b>{ $name }、クッキーが不足しています
-                     💸 必要数: 99 クッキー
+                     💸 必要数: 999 クッキー
                      🍪 口座残高: { $balance } クッキー
 
                      🎲 サイコロ (/dice) をプレイして、 クッキー</b> を獲得します 🍪

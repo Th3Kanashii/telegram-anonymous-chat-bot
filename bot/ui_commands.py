@@ -3,7 +3,7 @@ from aiogram.types import BotCommand, BotCommandScopeChat
 from aiogram_i18n import I18nContext
 
 
-async def set_commands(bot: Bot, i18n: I18nContext, chat_id: int) -> bool:
+async def set_commands(bot: Bot, i18n: I18nContext, chat_id: int) -> None:
     """
     Set commands for chat
 
@@ -12,7 +12,7 @@ async def set_commands(bot: Bot, i18n: I18nContext, chat_id: int) -> bool:
     :param chat_id: Chat ID
     :return: True if the commands were set successfully
     """
-    return await bot.set_my_commands(
+    await bot.set_my_commands(
         commands=[
             BotCommand(command="language", description=i18n.get("command-language")),
             BotCommand(command="profile", description=i18n.get("command-profile")),

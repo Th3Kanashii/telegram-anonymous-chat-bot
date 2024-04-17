@@ -105,12 +105,12 @@ async def chan_command(message: Message, i18n: I18nContext, user: DBUser, uow: U
     :param i18n: The i18n context.
     :return: The response.
     """
-    if user.balance <= 99:
+    if user.balance <= 999:
         return message.answer(
             i18n.get("not-enough-balance", name=user.mention, balance=user.balance)
         )
 
-    user.balance -= 99
+    user.balance -= 999
     chans: List[str] = [
         "https://imgur.com/a/suN3hTv",
         "https://imgur.com/a/lSwCP2O",
@@ -170,7 +170,7 @@ async def dice_command(message: Message, i18n: I18nContext, user: DBUser, uow: U
     dice: Message = await message.answer_dice(emoji=DiceEmoji.DICE)
     await asyncio.sleep(2)
 
-    user.balance += dice.dice.value
+    user.balance += dice.dice.value**3
     await uow.commit()
     return dice.reply(text=i18n.get("dice", number=dice.dice.value, balance=user.balance))
 
