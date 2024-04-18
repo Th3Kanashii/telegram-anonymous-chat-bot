@@ -28,6 +28,7 @@ async def start_command(
     Handle the /start command.
 
     :param message: The message.
+    :param bot: The bot.
     :param i18n: The i18n context.
     :param user: The user.
     :param commands: Whether to set the commands.
@@ -103,6 +104,8 @@ async def chan_command(message: Message, i18n: I18nContext, user: DBUser, uow: U
 
     :param message: The message.
     :param i18n: The i18n context.
+    :param user: The user.
+    :param uow: The unit of work.
     :return: The response.
     """
     if user.balance <= 999:
@@ -146,6 +149,16 @@ async def profile_command(message: Message, i18n: I18nContext, user: DBUser) -> 
 async def top_command(
     message: Message, i18n: I18nContext, user: DBUser, repository: Repository
 ) -> Any:
+    """
+    Handle the /top command.
+    Show the top users.
+
+    :param message: The message.
+    :param i18n: The i18n context.
+    :param user: The user.
+    :param repository: The repository.
+    :return: The response.
+    """
     top_users: Dict[str, Any] = await repository.user.top()
     users: int = await repository.user.all()
     position: int = await repository.user.position(balance=user.balance)
@@ -185,6 +198,7 @@ async def language_changed(
 
     :param callback: The callback.
     :param callback_data: The callback data.
+    :param bot: The bot.
     :param i18n: The i18n context.
     :param user: The user.
     :return: The response.

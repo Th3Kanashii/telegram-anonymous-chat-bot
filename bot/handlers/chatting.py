@@ -19,16 +19,19 @@ chatting_router: Final[Router] = Router(name=__name__)
 
 @chatting_router.message(or_f(Command("search"), F.text == LazyProxy("search-btn")), flags=flags)
 async def search_command(
-    message: Message, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW, bot: Bot
+    message: Message, bot: Bot, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW
 ) -> Any:
     """
-        Handle the /search command.
-        Search for a companion.
+    Handle the /search command.
+    Search for a companion.
 
-        :param message: The messa[tool.ruff.per-file-ignores]
-    "bot/handlers/chatting.py" = ["E501"]ge.
-        :param i18n: The i18n context.
-        :return: The response.
+    :param message: The message.
+    :param bot: The bot.
+    :param i18n: The i18n context.
+    :param user: The user.
+    :param repository: The repository.
+    :param uow: The unit of work.
+    :return: The response.
     """
     if user.status == UserStatus.ACTIVE:
         return message.answer(text=i18n.get("chat-with-companion"), reply_markup=dialog(i18n=i18n))
@@ -77,7 +80,11 @@ async def stop_command(
     Stop the companion search.
 
     :param message: The message.
+    :param bot: The bot.
     :param i18n: The i18n context.
+    :param user: The user.
+    :param repository: The repository.
+    :param uow: The unit of work.
     :return: The response.
     """
     if user.status == UserStatus.ACTIVE:
@@ -123,7 +130,11 @@ async def next_command(
     Next the companion.
 
     :param message: The message.
+    :param bot: The bot.
     :param i18n: The i18n context.
+    :param user: The user.
+    :param repository: The repository.
+    :param uow: The unit of work.
     :return: The response.
     """
     if user.status == UserStatus.ACTIVE:
@@ -184,7 +195,7 @@ async def chatting_reaction(message: MessageReactionUpdated, bot: Bot, user: DBU
     """
     Process the reaction to the chatting message.
 
-    :parammessage: The message.
+    :param message: The message.
     :param bot: The bot.
     :param user: The user.
     :return: The response.
