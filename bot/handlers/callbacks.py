@@ -76,7 +76,7 @@ async def pagination(
 
     top: str = "".join(
         [
-            f"❯❯ {index + start_index + 1}. {name} ⇏ {balance} 🍪\n"
+            f"❯❯ {index + start_index + 1}. 🕶 ⇏ {balance} 🍪\n"
             for index, (name, balance) in enumerate(current_users)
         ]
     )
