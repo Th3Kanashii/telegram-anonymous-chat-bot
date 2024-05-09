@@ -1,17 +1,9 @@
-from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram_i18n import I18nContext
 
-from ..enums import Locale
-
-
-class Language(CallbackData, prefix="language"):
-    """
-    Language callback data
-    """
-
-    language: str
+from ...enums import Locale
+from .factory import Language, Pagination
 
 
 def select_language() -> InlineKeyboardMarkup:
@@ -26,6 +18,31 @@ def select_language() -> InlineKeyboardMarkup:
             InlineKeyboardButton(text="🇬🇧", callback_data=Language(language=Locale.EN).pack()),
             InlineKeyboardButton(text="🇺🇦", callback_data=Language(language=Locale.UK).pack()),
             InlineKeyboardButton(text="🇯🇵", callback_data=Language(language=Locale.JA).pack()),
+        ],
+        width=2,
+    )
+    return keyboard.as_markup()
+
+
+def top_users(end_page: bool = False, page: int = 0) -> InlineKeyboardMarkup:
+    """
+    Top users keyboard
+
+    :param end_page: Is the last page.
+    :param page: Page number.
+    :return: InlineKeyboardMarkup with the top users.
+    """
+    keyboard: InlineKeyboardBuilder = InlineKeyboardBuilder()
+    keyboard.row(
+        *[
+            InlineKeyboardButton(
+                text="◀️" if page else "⏹️",
+                callback_data=Pagination(action="prev", page=page).pack(),
+            ),
+            InlineKeyboardButton(
+                text="▶️" if not end_page else "⏹️",
+                callback_data=Pagination(action="next", page=page).pack() if not end_page else "_",
+            ),
         ],
         width=2,
     )

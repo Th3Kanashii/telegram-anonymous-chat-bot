@@ -33,10 +33,7 @@ dice = 🎲 <b><u>Вам</u>, випало число: <code>{ $number }</code>
 
 top = 🍪 <b>{ $name }, топ за печивом</b> 🍪
 
-      ❯❯ 1. 🕶️ ⇏ { $first_cookie } 🍪
-      ❯❯ 2. 🕶️ ⇏ { $second_cookie } 🍪
-      ❯❯ 3. 🕶️ ⇏ { $third_cookie } 🍪
-
+      { $tops }
       ❤️ <b>Всього користувачів: { $users }
       🪑 Ваше місце у топі: { $position }</b>
 

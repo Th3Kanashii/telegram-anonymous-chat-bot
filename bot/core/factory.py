@@ -6,6 +6,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.utils.callback_answer import CallbackAnswerMiddleware
 from aiogram_i18n import I18nMiddleware
 from aiogram_i18n.cores import FluentRuntimeCore
 
@@ -47,6 +48,7 @@ def _setup_inner_middlewares(dispatcher: Dispatcher) -> None:
 
     :param dispatcher: An instance of the Dispatcher for the Telegram bot.
     """
+    dispatcher.callback_query.middleware(CallbackAnswerMiddleware())
     dispatcher.message.middleware(ThrottlingMiddleware())
 
 

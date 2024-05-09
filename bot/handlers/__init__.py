@@ -1,5 +1,6 @@
 from aiogram import Dispatcher, F
 
+from .callbacks import callbacks_router
 from .chatting import chatting_router
 from .menu import menu_router
 
@@ -14,6 +15,7 @@ def setup_routers(dispatcher: Dispatcher) -> None:
     dispatcher.include_routers(
         menu_router,
         chatting_router,
+        callbacks_router,
     )
 
 

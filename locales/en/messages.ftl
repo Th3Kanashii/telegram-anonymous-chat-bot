@@ -33,10 +33,7 @@ dice = 🎲 <b><u>Your</u> roll: <code>{ $number }</code>
 
 top = 🍪 <b>{ $name }, top cookie earners</b> 🍪
 
-      ❯❯ 1. 🕶️ ⇏ { $first_cookie } 🍪
-      ❯❯ 2. 🕶️ ⇏ { $second_cookie } 🍪
-      ❯❯ 3. 🕶️ ⇏ { $third_cookie } 🍪
-
+      { $tops }
       ❤️ <b>Total users: { $users }
       🪑 Your position in top: { $position }</b>
 

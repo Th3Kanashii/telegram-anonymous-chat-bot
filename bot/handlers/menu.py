@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING, Any, Dict, Final, List, Optional
 from aiogram import Bot, Router
 from aiogram.enums.dice_emoji import DiceEmoji
 from aiogram.filters import Command, CommandStart
-from aiogram.types import BotCommandScopeChat, CallbackQuery, Message, ReplyKeyboardRemove
+from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram_i18n import I18nContext
 
-from ..keyboards import Language, builder_reply, dialog, link_profile, select_language
+from ..keyboards import builder_reply, dialog, link_profile, select_language, top_users
 from ..ui_commands import set_commands
 
 if TYPE_CHECKING:
@@ -159,12 +159,17 @@ async def top_command(
     :param repository: The repository.
     :return: The response.
     """
-    top_users: Dict[str, Any] = await repository.user.top()
-    users: int = await repository.user.all()
     position: int = await repository.user.position(balance=user.balance)
-
+    users: List[tuple[str, int]] = await repository.user.top()
+    top: str = "".join(
+        [
+            f"❯❯ {index + 1}. {name} ⇏ {balance} 🍪\n"
+            for index, (name, balance) in enumerate(users[0:15])
+        ]
+    )
     return message.answer(
-        text=i18n.get("top", name=user.mention, users=users, position=position, **top_users)
+        text=i18n.get("top", tops=top, name=user.mention, position=position, users=len(users)),
+        reply_markup=top_users(),
     )
 
 
@@ -186,28 +191,3 @@ async def dice_command(message: Message, i18n: I18nContext, user: DBUser, uow: U
     user.balance += dice.dice.value**3
     await uow.commit()
     return dice.reply(text=i18n.get("dice", number=dice.dice.value, balance=user.balance))
-
-
-@menu_router.callback_query(Language.filter())
-async def language_changed(
-    callback: CallbackQuery, callback_data: Language, bot: Bot, i18n: I18nContext, user: DBUser
-) -> Any:
-    """
-    Handle the language selection callback.
-    Change the user's language.
-
-    :param callback: The callback.
-    :param callback_data: The callback data.
-    :param bot: The bot.
-    :param i18n: The i18n context.
-    :param user: The user.
-    :return: The response.
-    """
-    await i18n.set_locale(locale=callback_data.language)
-    await bot.delete_my_commands(scope=BotCommandScopeChat(chat_id=user.id))
-    await set_commands(bot=bot, i18n=i18n, chat_id=user.id)
-    await callback.message.delete()
-
-    return callback.message.answer(
-        text=i18n.get("help", name=user.mention), reply_markup=ReplyKeyboardRemove()
-    )

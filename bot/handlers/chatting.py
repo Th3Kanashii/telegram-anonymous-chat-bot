@@ -70,7 +70,8 @@ async def search_command(
 
 
 @chatting_router.message(
-    or_f(Command("stop"), F.text.in_([LazyProxy("stop-btn"), LazyProxy("cancel-btn")])), flags=flags
+    or_f(Command("stop"), F.text.in_([LazyProxy("stop-btn"), LazyProxy("cancel-btn")])),
+    flags=flags,
 )
 async def stop_command(
     message: Message, bot: Bot, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW

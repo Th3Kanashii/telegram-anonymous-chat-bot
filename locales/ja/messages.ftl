@@ -33,10 +33,7 @@ dice = 🎲 <b><u>あなた</u>の出目: <code>{ $number }</code>
 
 top = 🍪 <b>{ $name }, クッキーのトップ</b> 🍪
 
-      ❯❯ 1. 🕶️ ⇏ { $first_cookie } 🍪
-      ❯❯ 2. 🕶️ ⇏ { $second_cookie } 🍪
-      ❯❯ 3. 🕶️ ⇏ { $third_cookie } 🍪
-
+      { $tops }
       ❤️ <b>総ユーザー数: { $users }
       🪑 トップでのあなたの位置: { $position }</b>
 
