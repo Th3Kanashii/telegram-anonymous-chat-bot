@@ -163,7 +163,7 @@ async def top_command(
     users: List[tuple[str, int]] = await repository.user.top()
     top: str = "".join(
         [
-            f"❯❯ {index + 1}. {name} ⇏ {balance} 🍪\n"
+            f"❯❯ {index + 1}. 🕶 ⇏ {balance} 🍪\n"
             for index, (name, balance) in enumerate(users[0:15])
         ]
     )
