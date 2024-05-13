@@ -21,6 +21,7 @@ class DBUser(Base, TimestampMixin):
     name: Mapped[str] = mapped_column(nullable=False)
     locale: Mapped[str] = mapped_column(String(length=2), nullable=False)
     balance: Mapped[int] = mapped_column(nullable=False, default=0)
+    profile: Mapped[bool] = mapped_column(default=False)
     status: Mapped[str] = mapped_column(String(7), nullable=False, default=UserStatus.DEFAULT)
     companion: Mapped[Int64] = mapped_column(nullable=True)
 

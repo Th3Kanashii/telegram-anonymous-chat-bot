@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Dict, Final, Optional
 
 from aiogram import Bot, F, Router
+from aiogram.exceptions import TelegramForbiddenError
 from aiogram.filters import Command, or_f
 from aiogram.types import Message, MessageReactionUpdated
 from aiogram_i18n import I18nContext, LazyProxy
@@ -40,6 +41,7 @@ async def search_command(
             text=i18n.get("looking-for-a-companion"),
             reply_markup=builder_reply(i18n.get("stop-btn")),
         )
+
     companion: Optional[DBUser] = await repository.user.get_random_companion(user_id=user.id)
     if companion:
         await repository.user.update_companions(
@@ -49,8 +51,8 @@ async def search_command(
             companion_status=UserStatus.ACTIVE,
         )
         await message.answer(text=i18n.get("found-companion"), reply_markup=dialog(i18n=i18n))
+        await uow.commit(user, companion)
         await i18n.set_locale(locale=companion.locale, companion=companion)
-        await uow.commit(user)
 
         return await bot.send_message(
             chat_id=companion.id,
@@ -70,8 +72,7 @@ async def search_command(
 
 
 @chatting_router.message(
-    or_f(Command("stop"), F.text.in_([LazyProxy("stop-btn"), LazyProxy("cancel-btn")])),
-    flags=flags,
+    or_f(Command("stop"), F.text.in_([LazyProxy("stop-btn"), LazyProxy("cancel-btn")])), flags=flags
 )
 async def stop_command(
     message: Message, bot: Bot, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW
@@ -88,37 +89,36 @@ async def stop_command(
     :param uow: The unit of work.
     :return: The response.
     """
-    if user.status == UserStatus.ACTIVE:
-        companion: Optional[DBUser] = await repository.user.get(user_id=user.companion)
-        await message.answer(
-            text=i18n.get("you-leave"), reply_markup=builder_reply(i18n.get("search-btn"))
-        )
-        await repository.user.update_companions(
-            user=user,
-            companion=companion,
-            user_status=UserStatus.OFFLINE,
-            companion_status=UserStatus.WAITING,
-            is_stop=True,
-        )
-        await i18n.set_locale(locale=companion.locale, companion=companion)
-        await uow.commit(user)
-
-        return await bot.send_message(
-            chat_id=companion.id,
-            text=i18n.get("companion-leave"),
-            reply_markup=builder_reply(i18n.get("stop-btn")),
-        )
-
     if user.status == UserStatus.OFFLINE:
         return message.answer(
             text=i18n.get("search-not-started"),
             reply_markup=builder_reply(i18n.get("search-btn")),
         )
+    if user.status == UserStatus.WAITING:
+        user.status = UserStatus.OFFLINE
+        await uow.commit(user)
+        return message.answer(
+            text=i18n.get("stop-companion"), reply_markup=builder_reply(i18n.get("search-btn"))
+        )
 
-    user.status = UserStatus.OFFLINE
-    await uow.commit(user)
-    return message.answer(
-        text=i18n.get("stop-companion"), reply_markup=builder_reply(i18n.get("search-btn"))
+    companion: Optional[DBUser] = await repository.user.get(user_id=user.companion)
+    await message.answer(
+        text=i18n.get("you-leave"), reply_markup=builder_reply(i18n.get("search-btn"))
+    )
+    await repository.user.update_companions(
+        user=user,
+        companion=companion,
+        user_status=UserStatus.OFFLINE,
+        companion_status=UserStatus.WAITING,
+        is_stop=True,
+    )
+    await uow.commit(user, companion)
+    await i18n.set_locale(locale=companion.locale, companion=companion)
+
+    return await bot.send_message(
+        chat_id=companion.id,
+        text=i18n.get("companion-leave"),
+        reply_markup=builder_reply(i18n.get("stop-btn")),
     )
 
 
@@ -138,57 +138,74 @@ async def next_command(
     :param uow: The unit of work.
     :return: The response.
     """
-    if user.status == UserStatus.ACTIVE:
-        companion: Optional[DBUser] = await repository.user.get(user_id=user.companion)
-        await message.answer(
-            text=i18n.get("next-companion"), reply_markup=builder_reply(i18n.get("stop-btn"))
-        )
-        await repository.user.update_companions(
-            user=user,
-            companion=companion,
-            user_status=UserStatus.WAITING,
-            companion_status=UserStatus.WAITING,
-            is_stop=True,
-        )
-        await i18n.set_locale(locale=companion.locale, companion=companion)
-        await uow.commit(user)
-
-        return await bot.send_message(
-            chat_id=companion.id,
-            text=i18n.get("companion-leave"),
-            reply_markup=builder_reply(i18n.get("stop-btn")),
-        )
-
     if user.status == UserStatus.WAITING:
         return message.answer(
             text=i18n.get("looking-for-a-companion"),
             reply_markup=builder_reply(i18n.get("stop-btn")),
         )
+    if user.status == UserStatus.OFFLINE:
+        return message.answer(
+            text=i18n.get("search-not-started"),
+            reply_markup=builder_reply(i18n.get("search-btn")),
+        )
 
-    return message.answer(
-        text=i18n.get("search-not-started"),
-        reply_markup=builder_reply(i18n.get("search-btn")),
+    companion: Optional[DBUser] = await repository.user.get(user_id=user.companion)
+    await message.answer(
+        text=i18n.get("next-companion"), reply_markup=builder_reply(i18n.get("stop-btn"))
+    )
+    await repository.user.update_companions(
+        user=user,
+        companion=companion,
+        user_status=UserStatus.WAITING,
+        companion_status=UserStatus.WAITING,
+        is_stop=True,
+    )
+    await uow.commit(user, companion)
+    await i18n.set_locale(locale=companion.locale, companion=companion)
+
+    return await bot.send_message(
+        chat_id=companion.id,
+        text=i18n.get("companion-leave"),
+        reply_markup=builder_reply(i18n.get("stop-btn")),
     )
 
 
 @chatting_router.message(flags={"throttling_key": "chatting"})
 async def chatting(
-    message: Message, i18n: I18nContext, user: DBUser, repository: Repository
+    message: Message, bot: Bot, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW
 ) -> Any:
     """
     Process the chatting.
 
     :param message: The message.
+    :param bot: The bot.
     :param i18n: The i18n context.
     :param user: The user.
     :param repository: The repository.
+    :param uow: The unit of work.
     :return: The response.
     """
-    if user.companion:
-        companion: Optional[DBUser] = await repository.user.get(user_id=user.companion)
-        await i18n.set_locale(locale=companion.locale, companion=companion)
-        return message.copy_to(chat_id=user.companion, reply_markup=dialog(i18n=i18n))
-    return message.delete()
+    if not user.companion:
+        return message.delete()
+
+    companion: Optional[DBUser] = await repository.user.get(user_id=user.companion)
+    await i18n.set_locale(locale=companion.locale, companion=companion)
+
+    try:
+        await message.copy_to(chat_id=user.companion, reply_markup=dialog(i18n=i18n))
+        return None
+    except TelegramForbiddenError:
+        await repository.user.update_companions(
+            user=user,
+            companion=companion,
+            user_status=UserStatus.WAITING,
+            companion_status=UserStatus.OFFLINE,
+            is_stop=True,
+        )
+        await uow.commit(user, companion)
+        await i18n.set_locale(locale=user.locale, user=user)
+        await message.answer(text=i18n.get("block-companion"))
+        return await search_command(message, bot, i18n, user, repository, uow)
 
 
 @chatting_router.message_reaction()

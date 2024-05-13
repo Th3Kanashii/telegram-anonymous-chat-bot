@@ -31,11 +31,11 @@ profile = 👤 <b>{ $name }, <u>Your</u> profile:
 dice = 🎲 <b><u>Your</u> roll: <code>{ $number }</code>
        💰 Your balance: <code>{ $balance }</code></b>
 
-top = 🍪 <b>{ $name }, top cookie earners</b> 🍪
+top = 🍪 { $name }, top cookie earners 🍪
 
       { $tops }
-      ❤️ <b>Total users: { $users }
-      🪑 Your position in top: { $position }</b>
+      ❤️ Total users: { $users }
+      🪑 Your position in top: { $position }
 
 command-language = 🌐 Change language
 command-profile = 👤 Your profile
@@ -52,12 +52,16 @@ cancel-btn = ⏹️ End dialogue
 stop-btn = 🛑 Cancel search
 next-btn = ➡️ Next companion
 profile-btn = 🔓 Open profile
+close-profile-btn = 🔒 Close profile
 
 search-not-started = 🔍 <b>Start searching for a conversation partner!</b>
 looking-for-a-companion= 🔍 <b>Already looking for <u>you</u> a conversation partner...</b>
 search-companion = 🔍 <b>Searching for <u>you</u> a conversation partner...</b>
 next-companion = 🔍 <b>Searching for <u>you</u> a new conversation partner...</b>
 stop-companion = 😔 <b>That's it.. I won't look for anyone else!</b>
+block-companion = 😔 <b>Oops! It seems the interlocutor has blocked the bot</b>
+profile-opened = 🔓 Profile opened
+profile-closed = 🔒 Profile closed
 
 found-companion = 🎁 <b>Found <u>you</u> a conversation partner, enjoy chatting!</b>
 chat-with-companion = 💬 <b>You already have a conversation partner!</b>

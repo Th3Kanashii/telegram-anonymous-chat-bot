@@ -160,16 +160,16 @@ async def top_command(
     :return: The response.
     """
     position: int = await repository.user.position(balance=user.balance)
-    users: List[tuple[str, int]] = await repository.user.top()
+    users: List[tuple[str, bool, int]] = await repository.user.top()
     top: str = "".join(
         [
-            f"❯❯ {index + 1}. 🕶 ⇏ {balance} 🍪\n"
-            for index, (name, balance) in enumerate(users[0:15])
+            f"❯❯ {index + 1}. {name if profile else '🕶'} ⇏ {balance} 🍪\n"
+            for index, (name, profile, balance) in enumerate(users[0:15])
         ]
     )
     return message.answer(
-        text=i18n.get("top", tops=top, name=user.mention, position=position, users=len(users)),
-        reply_markup=top_users(),
+        text=i18n.get("top", tops=top, name=user.name, position=position, users=len(users)),
+        reply_markup=top_users(i18n=i18n, profile=user.profile),
     )
 
 

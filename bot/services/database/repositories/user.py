@@ -61,14 +61,14 @@ class UserRepository(BaseRepository):
         user.companion, companion.companion = (None, None) if is_stop else (companion.id, user.id)
         user.status, companion.status = user_status.value, companion_status.value
 
-    async def top(self) -> List[tuple[str, int]]:
+    async def top(self) -> List[tuple[str, bool, int]]:
         """
         Get the top users.
 
         :return: The top users.
         """
-        result: Result[tuple[str, int]] = await self._session.execute(
-            select(DBUser.name, DBUser.balance).order_by(DBUser.balance.desc())
+        result: Result[tuple[str, bool, int]] = await self._session.execute(
+            select(DBUser.name, DBUser.profile, DBUser.balance).order_by(DBUser.balance.desc())
         )
         return list(result.all())
 

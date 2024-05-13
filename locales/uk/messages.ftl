@@ -31,11 +31,11 @@ profile = 👤 <b>{ $name }, <u>Ваш</u>, профіль:
 dice = 🎲 <b><u>Вам</u>, випало число: <code>{ $number }</code>
        💰 Ваш баланс: <code>{ $balance }</code></b>
 
-top = 🍪 <b>{ $name }, топ за печивом</b> 🍪
+top = 🍪 { $name }, топ за печивом 🍪
 
       { $tops }
-      ❤️ <b>Всього користувачів: { $users }
-      🪑 Ваше місце у топі: { $position }</b>
+      ❤️ Всього користувачів: { $users }
+      🪑 Ваше місце у топі: { $position }
 
 command-language = 🌐 Змінити мову
 command-profile = 👤 Ваш профіль
@@ -52,12 +52,16 @@ cancel-btn = ⏹️ Припинити діалог
 stop-btn = 🛑 Скасувати пошук
 next-btn = ➡️ Наступний співрозмовник
 profile-btn = 🔓 Відкрити профіль
+close-profile-btn = 🔒 Закрити профіль
 
 search-not-started = 🔍 <b>Розпочніть пошук співрозмовника!</b>
 looking-for-a-companion= 🔍 <b>ВЖЕ ШУКАЮ <u>Вам</u> співрозмовника...</b>
 search-companion = 🔍 <b>Шукаю <u>Вам</u>, співрозмовника...</b>
 next-companion = 🔍 <b>Шукаю <u>Вам</u>, нового співрозмовника...</b>
 stop-companion = 😔 <b>Все.. більше нікого шукати не буду!</b>
+block-companion = 😔 <b>Упс! Схоже співрозмовник заблокував бота</b>
+profile-opened = 🔓 Профіль відкрито
+profile-closed = 🔒 Профіль закрито
 
 found-companion = 🎁 <b>Я знайшов <u>Вам</u>, співрозмовника, приємного спілкування!</b>
 chat-with-companion = 💬 <b>У <u>Вас</u>, уже є співрозмовник!</b>

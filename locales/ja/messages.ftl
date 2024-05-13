@@ -31,11 +31,11 @@ profile = 👤 <b>{ $name }, <u>あなたの</u>プロフィール:
 dice = 🎲 <b><u>あなた</u>の出目: <code>{ $number }</code>
        💰 あなたのバランス: <code>{ $balance }</code></b>
 
-top = 🍪 <b>{ $name }, クッキーのトップ</b> 🍪
+top = 🍪 { $name }, クッキーのトップ 🍪
 
       { $tops }
-      ❤️ <b>総ユーザー数: { $users }
-      🪑 トップでのあなたの位置: { $position }</b>
+      ❤️ 総ユーザー数: { $users }
+      🪑 トップでのあなたの位置: { $position }
 
 command-language = 🌐 言語を変更
 command-profile = 👤 あなたのプロフィール
@@ -52,12 +52,16 @@ cancel-btn = ⏹️ 対話をやめてください
 stop-btn = 🛑 検索をキャンセルする
 next-btn = ➡️ 次の対談者は
 profile-btn = 🔓 プロフィールを開く
+close-profile-btn = 🔒 プロフィールを閉じる
 
 search-not-started = 🔍 <b>相手を検索していません。</b>
 looking-for-a-companion= 🔍 <b>すでに相手を探しています。</b>
 search-companion = 🔍 <b>相手を探しています。</b>
 next-companion = 🔍 <b>新しい相手を探しています...</b>
 stop-companion = 😔 <b>以上です。誰も探さないよ！</b>
+block-companion = 😔 <b>おっと！相手がボットをブロックしたようです</b>
+profile-opened = 🔓 プロフィールが公開されています
+profile-closed = 🔒 プロフィールは閉じられました
 
 found-companion = 🎁 <b>相手が見つかりました。楽しい会話を!</b>
 chat-with-companion = 💬 <b>すでに相手がいます。</b>

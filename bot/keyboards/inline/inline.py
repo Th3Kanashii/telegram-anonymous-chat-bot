@@ -24,15 +24,29 @@ def select_language() -> InlineKeyboardMarkup:
     return keyboard.as_markup()
 
 
-def top_users(end_page: bool = False, page: int = 0) -> InlineKeyboardMarkup:
+def top_users(
+    i18n: I18nContext, profile: bool, end_page: bool = False, page: int = 0
+) -> InlineKeyboardMarkup:
     """
     Top users keyboard
 
+    :param i18n: I18nContext object.
+    :param profile: Is the profile.
     :param end_page: Is the last page.
     :param page: Page number.
     :return: InlineKeyboardMarkup with the top users.
     """
     keyboard: InlineKeyboardBuilder = InlineKeyboardBuilder()
+
+    if profile:
+        keyboard.add(
+            InlineKeyboardButton(text=i18n.get("close-profile-btn"), callback_data="close-profile")
+        )
+    else:
+        keyboard.add(
+            InlineKeyboardButton(text=i18n.get("profile-btn"), callback_data="open-profile")
+        )
+
     keyboard.row(
         *[
             InlineKeyboardButton(
