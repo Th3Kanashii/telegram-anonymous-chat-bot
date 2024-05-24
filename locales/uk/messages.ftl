@@ -29,7 +29,9 @@ profile = 👤 <b>{ $name }, <u>Ваш</u>, профіль:
           📆 Дата реєстрації: { DATETIME($date) }</b>
 
 dice = 🎲 <b><u>Вам</u>, випало число: <code>{ $number }</code>
-       💰 Ваш баланс: <code>{ $balance }</code></b>
+       💰 Ваш баланс: <code>{ $balance }</code>
+
+       🪑 Ваше місце у топі: { $position }</b>
 
 top = 🍪 { $name }, топ за печивом 🍪
 

@@ -29,7 +29,9 @@ profile = 👤 <b>{ $name }, <u>あなたの</u>プロフィール:
           📆 登録日: { DATETIME($date) }</b>
 
 dice = 🎲 <b><u>あなた</u>の出目: <code>{ $number }</code>
-       💰 あなたのバランス: <code>{ $balance }</code></b>
+       💰 あなたのバランス: <code>{ $balance }</code>
+
+       🪑 トップでのあなたの位置: { $position }</b>
 
 top = 🍪 { $name }, クッキーのトップ 🍪
 

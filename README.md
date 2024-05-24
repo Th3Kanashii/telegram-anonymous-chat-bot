@@ -15,24 +15,19 @@ A bot was created for the demonstration [@TokumeiChatto](https://t.me/TokumeiCha
 
 ## Deployment
 
-1. **Clone the repository:**
+### Via [Docker](https://www.docker.com/)
 
-    ```bash
-    git clone https://github.com/Th3Kanashii/telegram-anonymous-chat-bot.git
-    ```
+- Rename `.env.dist` to `.env` and configure it
+- Configure url in `alembic.ini`
+- Run `make app-build` command then `make app-run` to start the bot
 
-2. **Rename `.env.dist` to `.env` and configure it:**
+### Via Systemd service
 
-   Rename the `.env.dist` file to `.env` and specify the necessary parameters for the bot to work.
-
-3. **Build the application and run the bot:**
-
-    Execute the following commands:
-
-    ```bash
-    make app-build
-    make app-run
-    ```
+- Configure and start [PostgreSQL](https://www.postgresql.org/)
+- Rename `.env.example` to `.env` and configure it
+- Configure url in `alembic.ini`
+- Run database migrations with `make migrate` command
+- Configure `telegram-bot.service` ([» Read more](https://gist.github.com/comhad/de830d6d1b7ae1f165b925492e79eac8))
 
 ## Development
 

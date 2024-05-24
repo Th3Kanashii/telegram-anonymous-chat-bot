@@ -174,7 +174,9 @@ async def top_command(
 
 
 @menu_router.message(Command("dice"), flags={"throttling_key": "dice"})
-async def dice_command(message: Message, i18n: I18nContext, user: DBUser, uow: UoW) -> Any:
+async def dice_command(
+    message: Message, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW
+) -> Any:
     """
     Handle the /dice command.
     Send a dice and add its value to the user's balance.
@@ -182,6 +184,7 @@ async def dice_command(message: Message, i18n: I18nContext, user: DBUser, uow: U
     :param message: Received message.
     :param i18n: I18n context.
     :param user: User from the database.
+    :param repository: The repository.
     :param uow: Unit of work.
     :return: The responce.
     """
@@ -190,4 +193,7 @@ async def dice_command(message: Message, i18n: I18nContext, user: DBUser, uow: U
 
     user.balance += dice.dice.value**3
     await uow.commit()
-    return dice.reply(text=i18n.get("dice", number=dice.dice.value, balance=user.balance))
+    position: int = await repository.user.position(balance=user.balance)
+    return dice.reply(
+        text=i18n.get("dice", number=dice.dice.value, balance=user.balance, position=position)
+    )

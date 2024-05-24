@@ -29,7 +29,9 @@ profile = 👤 <b>{ $name }, <u>Your</u> profile:
           📆 Registration Date: { DATETIME($date) }</b>
 
 dice = 🎲 <b><u>Your</u> roll: <code>{ $number }</code>
-       💰 Your balance: <code>{ $balance }</code></b>
+       💰 Your balance: <code>{ $balance }</code>
+
+       🪑 Your position in top: { $position }</b>
 
 top = 🍪 { $name }, top cookie earners 🍪
 
