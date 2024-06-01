@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, Final, List
+from typing import TYPE_CHECKING, Final, List
 
 from aiogram import Bot, F, Router
 from aiogram.exceptions import TelegramBadRequest
@@ -20,7 +20,7 @@ callbacks_router: Final[Router] = Router(name=__name__)
 @callbacks_router.callback_query(Language.filter())
 async def language_changed(
     callback: CallbackQuery, callback_data: Language, bot: Bot, i18n: I18nContext, user: DBUser
-) -> Any:
+) -> None:
     """
     Handle the language selection callback.
     Change the user's language.
@@ -30,14 +30,12 @@ async def language_changed(
     :param bot: The bot.
     :param i18n: The i18n context.
     :param user: The user.
-    :return: The response.
     """
     await i18n.set_locale(locale=callback_data.language)
     await bot.delete_my_commands(scope=BotCommandScopeChat(chat_id=user.id))
     await set_commands(bot=bot, i18n=i18n, chat_id=user.id)
     await callback.message.delete()
-
-    return callback.message.answer(
+    await callback.message.answer(
         text=i18n.get("help", name=user.mention), reply_markup=ReplyKeyboardRemove()
     )
 
@@ -49,7 +47,7 @@ async def pagination(
     i18n: I18nContext,
     user: DBUser,
     repository: Repository,
-) -> Any:
+) -> None:
     """
     Handle the pagination callback.
     Change the page.
@@ -59,7 +57,6 @@ async def pagination(
     :param i18n: The i18n context.
     :param user: The user.
     :param repository: The repository.
-    :return: The response.
     """
     page_num: int = int(callback_data.page)
     page: int = page_num - 1 if page_num > 0 else 0
@@ -83,14 +80,14 @@ async def pagination(
     end_page: bool = end_index == len(users)
 
     with suppress(TelegramBadRequest):
-        return callback.message.edit_text(
+        await callback.message.edit_text(
             text=i18n.get("top", tops=top, name=user.name, position=position, users=len(users)),
             reply_markup=top_users(i18n=i18n, profile=user.profile, end_page=end_page, page=page),
         )
 
 
 @callbacks_router.callback_query(F.data.endswith("profile"))
-async def profile(callback: CallbackQuery, i18n: I18nContext, user: DBUser, uow: UoW) -> Any:
+async def profile(callback: CallbackQuery, i18n: I18nContext, user: DBUser, uow: UoW) -> None:
     """
     Handle the profile callback.
     Change the profile status.
@@ -99,7 +96,6 @@ async def profile(callback: CallbackQuery, i18n: I18nContext, user: DBUser, uow:
     :param i18n: The i18n context.
     :param user: The user.
     :param uow: The unit of work.
-    :return: The response.
     """
     if callback.data == "open-profile":
         user.profile = True
@@ -109,7 +105,6 @@ async def profile(callback: CallbackQuery, i18n: I18nContext, user: DBUser, uow:
         await callback.answer(text=i18n.get("profile-closed"))
 
     await uow.commit(user)
-
-    return callback.message.edit_reply_markup(
+    await callback.message.edit_reply_markup(
         reply_markup=top_users(i18n=i18n, profile=user.profile)
     )

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Final, Optional
+import asyncio
+from typing import TYPE_CHECKING, Dict, Final, Optional
 
 from aiogram import Bot, F, Router
 from aiogram.exceptions import TelegramForbiddenError
@@ -10,6 +11,7 @@ from aiogram_i18n import I18nContext, LazyProxy
 
 from ..enums import UserStatus
 from ..keyboards import builder_reply, dialog
+from ..utils import find_companion
 
 if TYPE_CHECKING:
     from ..services.database import DBUser, Repository, UoW
@@ -21,7 +23,7 @@ chatting_router: Final[Router] = Router(name=__name__)
 @chatting_router.message(or_f(Command("search"), F.text == LazyProxy("search-btn")), flags=flags)
 async def search_command(
     message: Message, bot: Bot, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW
-) -> Any:
+) -> None:
     """
     Handle the /search command.
     Search for a companion.
@@ -32,40 +34,26 @@ async def search_command(
     :param user: The user.
     :param repository: The repository.
     :param uow: The unit of work.
-    :return: The response.
     """
     if user.status == UserStatus.ACTIVE:
-        return message.answer(text=i18n.get("chat-with-companion"), reply_markup=dialog(i18n=i18n))
+        await message.answer(text=i18n.get("chat-with-companion"), reply_markup=dialog(i18n=i18n))
+        return
     if user.status == UserStatus.WAITING:
-        return message.answer(
+        await message.answer(
             text=i18n.get("looking-for-a-companion"),
             reply_markup=builder_reply(i18n.get("stop-btn")),
         )
+        return
 
-    companion: Optional[DBUser] = await repository.user.get_random_companion(user_id=user.id)
-    if companion:
-        await repository.user.update_companions(
-            user=user,
-            companion=companion,
-            user_status=UserStatus.ACTIVE,
-            companion_status=UserStatus.ACTIVE,
-        )
-        await message.answer(text=i18n.get("found-companion"), reply_markup=dialog(i18n=i18n))
-        await uow.commit(user, companion)
-        await i18n.set_locale(locale=companion.locale, companion=companion)
-
-        return await bot.send_message(
-            chat_id=companion.id,
-            text=i18n.get("found-companion"),
-            reply_markup=dialog(i18n=i18n),
-        )
+    if await find_companion(bot, i18n, user, repository, uow):
+        return
 
     user.status = UserStatus.WAITING
     await uow.commit(user)
     await message.answer_sticker(
         sticker="CAACAgQAAxkBAAEL8KhmIDlSgGRsYYZdHgeYeCa9WRmeHgACeg8AAiD2UgyxLSQwkJOmejQE"
     )
-    return message.answer(
+    await message.answer(
         text=i18n.get("search-companion"),
         reply_markup=builder_reply(i18n.get("stop-btn")),
     )
@@ -76,7 +64,7 @@ async def search_command(
 )
 async def stop_command(
     message: Message, bot: Bot, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW
-) -> Any:
+) -> None:
     """
     Handle the /stop command.
     Stop the companion search.
@@ -87,19 +75,20 @@ async def stop_command(
     :param user: The user.
     :param repository: The repository.
     :param uow: The unit of work.
-    :return: The response.
     """
     if user.status == UserStatus.OFFLINE:
-        return message.answer(
+        await message.answer(
             text=i18n.get("search-not-started"),
             reply_markup=builder_reply(i18n.get("search-btn")),
         )
+        return
     if user.status == UserStatus.WAITING:
         user.status = UserStatus.OFFLINE
         await uow.commit(user)
-        return message.answer(
+        await message.answer(
             text=i18n.get("stop-companion"), reply_markup=builder_reply(i18n.get("search-btn"))
         )
+        return
 
     companion: Optional[DBUser] = await repository.user.get(user_id=user.companion)
     await message.answer(
@@ -114,18 +103,18 @@ async def stop_command(
     )
     await uow.commit(user, companion)
     await i18n.set_locale(locale=companion.locale, companion=companion)
-
-    return await bot.send_message(
+    await bot.send_message(
         chat_id=companion.id,
         text=i18n.get("companion-leave"),
         reply_markup=builder_reply(i18n.get("stop-btn")),
     )
+    await find_companion(bot, i18n, companion, repository, uow)
 
 
 @chatting_router.message(or_f(Command("next"), F.text == LazyProxy("next-btn")), flags=flags)
 async def next_command(
     message: Message, bot: Bot, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW
-) -> Any:
+) -> None:
     """
     Handle the /next command.
     Next the companion.
@@ -136,18 +125,19 @@ async def next_command(
     :param user: The user.
     :param repository: The repository.
     :param uow: The unit of work.
-    :return: The response.
     """
     if user.status == UserStatus.WAITING:
-        return message.answer(
+        await message.answer(
             text=i18n.get("looking-for-a-companion"),
             reply_markup=builder_reply(i18n.get("stop-btn")),
         )
+        return
     if user.status == UserStatus.OFFLINE:
-        return message.answer(
+        await message.answer(
             text=i18n.get("search-not-started"),
             reply_markup=builder_reply(i18n.get("search-btn")),
         )
+        return
 
     companion: Optional[DBUser] = await repository.user.get(user_id=user.companion)
     await message.answer(
@@ -162,18 +152,20 @@ async def next_command(
     )
     await uow.commit(user, companion)
     await i18n.set_locale(locale=companion.locale, companion=companion)
-
-    return await bot.send_message(
+    await bot.send_message(
         chat_id=companion.id,
         text=i18n.get("companion-leave"),
         reply_markup=builder_reply(i18n.get("stop-btn")),
     )
+    await i18n.set_locale(locale=user.locale, user=user)
+    await asyncio.sleep(1)
+    await find_companion(bot, i18n, user, repository, uow)
 
 
 @chatting_router.message(flags={"throttling_key": "chatting"})
 async def chatting(
     message: Message, bot: Bot, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW
-) -> Any:
+) -> None:
     """
     Process the chatting.
 
@@ -183,17 +175,16 @@ async def chatting(
     :param user: The user.
     :param repository: The repository.
     :param uow: The unit of work.
-    :return: The response.
     """
     if not user.companion:
-        return message.delete()
+        await message.delete()
+        return
 
     companion: Optional[DBUser] = await repository.user.get(user_id=user.companion)
     await i18n.set_locale(locale=companion.locale, companion=companion)
 
     try:
         await message.copy_to(chat_id=user.companion, reply_markup=dialog(i18n=i18n))
-        return None
     except TelegramForbiddenError:
         await repository.user.update_companions(
             user=user,
@@ -205,23 +196,26 @@ async def chatting(
         await uow.commit(user, companion)
         await i18n.set_locale(locale=user.locale, user=user)
         await message.answer(text=i18n.get("block-companion"))
-        return await search_command(message, bot, i18n, user, repository, uow)
+        await message.answer(
+            text=i18n.get("next-companion"), reply_markup=builder_reply(i18n.get("stop-btn"))
+        )
+        await find_companion(bot, i18n, user, repository, uow)
 
 
 @chatting_router.message_reaction()
-async def chatting_reaction(message: MessageReactionUpdated, bot: Bot, user: DBUser) -> Any:
+async def chatting_reaction(message: MessageReactionUpdated, bot: Bot, user: DBUser) -> None:
     """
     Process the reaction to the chatting message.
 
     :param message: The message.
     :param bot: The bot.
     :param user: The user.
-    :return: The response.
     """
-    if user.companion:
-        return await bot.set_message_reaction(
-            chat_id=user.companion,
-            message_id=message.message_id - 1,
-            reaction=message.new_reaction,
-        )
-    return None
+    if not user.companion:
+        return
+
+    await bot.set_message_reaction(
+        chat_id=user.companion,
+        message_id=message.message_id - 1,
+        reaction=message.new_reaction,
+    )
