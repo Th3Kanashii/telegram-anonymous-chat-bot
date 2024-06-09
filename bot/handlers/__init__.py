@@ -1,8 +1,7 @@
 from aiogram import Dispatcher, F
+from aiogram.enums.chat_type import ChatType
 
-from .callbacks import callbacks_router
-from .chatting import chatting_router
-from .menu import menu_router
+from . import callbacks, common, messages
 
 
 def setup_routers(dispatcher: Dispatcher) -> None:
@@ -11,11 +10,11 @@ def setup_routers(dispatcher: Dispatcher) -> None:
 
     :param dispatcher: An instance of the Dispatcher for the Telegram bot.
     """
-    dispatcher.message.filter(F.chat.type == "private")
+    dispatcher.message.filter(F.chat.type == ChatType.PRIVATE)
     dispatcher.include_routers(
-        menu_router,
-        chatting_router,
-        callbacks_router,
+        common.router,
+        callbacks.router,
+        messages.router,
     )
 
 

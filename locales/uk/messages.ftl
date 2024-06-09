@@ -17,13 +17,14 @@ help = 😍 <b>{ $name }, команди:
         🎲 /dice | <code>кубики</code> ❯ кинути кубик
         🏆 /top | <code>топ</code> ❯ рейтинг користувачів
 
-        🔗 Посилання на проєкт: <a href='https://github.com/Th3Kanashii/telegram-anonymous-chat-bot'>GitHub</a></b>
+        🔗 Посилання на проєкт: <a href='https://github.com/Th3Kanashii/telegram-anonymous-chat-bot'>🐙 GitHub</a>
+        ❤️ Підтримати проєкт: <a href='https://buymeacoffee.com/Th3Kanashii'>☕ BuyMeACoffee</a>, <a href='https://ko-fi.com/Th3Kanashii'>🎁 Ko-Fi</a></b>
 
 language = 🌐 <b>{ $name }, якою мовою ти хочеш, щоб я говорив?</b>
 
 profile = 👤 <b>{ $name }, <u>Ваш</u>, профіль:
           🆔 ❯ <code>{ $id }</code>
-
+          🕶 Приховати ім'я вгорі: { $open }
           💰 Баланс: { $balance } печива
 
           📆 Дата реєстрації: { DATETIME($date) }</b>
@@ -38,6 +39,8 @@ top = 🍪 { $name }, топ за печивом 🍪
       { $tops }
       ❤️ Всього користувачів: { $users }
       🪑 Ваше місце у топі: { $position }
+
+nothing = Ця кнопка нічого не робить 😊
 
 command-language = 🌐 Змінити мову
 command-profile = 👤 Ваш профіль
@@ -55,6 +58,7 @@ stop-btn = 🛑 Скасувати пошук
 next-btn = ➡️ Наступний співрозмовник
 profile-btn = 🔓 Відкрити профіль
 close-profile-btn = 🔒 Закрити профіль
+top-btn = 🍪 Топ за печивом
 
 search-not-started = 🔍 <b>Розпочніть пошук співрозмовника!</b>
 looking-for-a-companion= 🔍 <b>ВЖЕ ШУКАЮ <u>Вам</u> співрозмовника...</b>
@@ -62,8 +66,6 @@ search-companion = 🔍 <b>Шукаю <u>Вам</u>, співрозмовник�
 next-companion = 🔍 <b>Шукаю <u>Вам</u>, нового співрозмовника...</b>
 stop-companion = 😔 <b>Все.. більше нікого шукати не буду!</b>
 block-companion = 😔 <b>Упс! Схоже співрозмовник заблокував бота</b>
-profile-opened = 🔓 Профіль відкрито
-profile-closed = 🔒 Профіль закрито
 
 found-companion = 🎁 <b>Я знайшов <u>Вам</u>, співрозмовника, приємного спілкування!</b>
 chat-with-companion = 💬 <b>У <u>Вас</u>, уже є співрозмовник!</b>

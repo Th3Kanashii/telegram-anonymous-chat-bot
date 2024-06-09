@@ -1,4 +1,12 @@
-from .inline import Language, Pagination, link_profile, select_language, top_users
+from .inline import (
+    Language,
+    Pagination,
+    Profile,
+    link_profile,
+    pagination_users,
+    profile,
+    select_language,
+)
 from .reply import builder_reply, dialog
 
 __all__ = [
@@ -8,5 +16,7 @@ __all__ = [
     "dialog",
     "Language",
     "Pagination",
-    "top_users",
+    "Profile",
+    "pagination_users",
+    "profile",
 ]

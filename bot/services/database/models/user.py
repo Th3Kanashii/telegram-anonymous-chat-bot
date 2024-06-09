@@ -49,3 +49,15 @@ class DBUser(Base, TimestampMixin):
         :return: Instance of the model.
         """
         return DBUser(id=user.id, name=user.full_name, locale=locale)
+
+    def open_profile(self) -> None:
+        """
+        Open the user's profile.
+        """
+        self.profile = True
+
+    def close_profile(self) -> None:
+        """
+        Close the user's profile.
+        """
+        self.profile = False

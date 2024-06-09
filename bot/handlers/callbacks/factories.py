@@ -3,21 +3,22 @@ from __future__ import annotations
 from contextlib import suppress
 from typing import TYPE_CHECKING, Final, List
 
-from aiogram import Bot, F, Router
+from aiogram import Bot, Router
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.types import BotCommandScopeChat, CallbackQuery, ReplyKeyboardRemove
 from aiogram_i18n import I18nContext
 
-from ..keyboards import Language, Pagination, top_users
-from ..ui_commands import set_commands
+from ...enums import CallbackData
+from ...keyboards import Language, Pagination, Profile, pagination_users, profile
+from ...ui_commands import set_commands
 
 if TYPE_CHECKING:
-    from ..services.database import DBUser, Repository, UoW
+    from ...services.database import DBUser, Repository, UoW
 
-callbacks_router: Final[Router] = Router(name=__name__)
+router: Final[Router] = Router(name=__name__)
 
 
-@callbacks_router.callback_query(Language.filter())
+@router.callback_query(Language.filter())
 async def language_changed(
     callback: CallbackQuery, callback_data: Language, bot: Bot, i18n: I18nContext, user: DBUser
 ) -> None:
@@ -40,7 +41,7 @@ async def language_changed(
     )
 
 
-@callbacks_router.callback_query(Pagination.filter())
+@router.callback_query(Pagination.filter())
 async def pagination(
     callback: CallbackQuery,
     callback_data: Pagination,
@@ -82,29 +83,38 @@ async def pagination(
     with suppress(TelegramBadRequest):
         await callback.message.edit_text(
             text=i18n.get("top", tops=top, name=user.name, position=position, users=len(users)),
-            reply_markup=top_users(i18n=i18n, profile=user.profile, end_page=end_page, page=page),
+            reply_markup=pagination_users(end_page=end_page, page=page),
         )
 
 
-@callbacks_router.callback_query(F.data.endswith("profile"))
-async def profile(callback: CallbackQuery, i18n: I18nContext, user: DBUser, uow: UoW) -> None:
+@router.callback_query(Profile.filter())
+async def update_profile(
+    callback: CallbackQuery, callback_data: Profile, i18n: I18nContext, user: DBUser, uow: UoW
+) -> None:
     """
     Handle the profile callback.
-    Change the profile status.
+    Open or close the user's profile.
 
     :param callback: The callback.
+    :param callback_data: The callback data.
     :param i18n: The i18n context.
     :param user: The user.
     :param uow: The unit of work.
     """
-    if callback.data == "open-profile":
-        user.profile = True
-        await callback.answer(text=i18n.get("profile-opened"))
+    if callback_data.action == CallbackData.OPEN_PROFILE:
+        user.open_profile()
     else:
-        user.profile = False
-        await callback.answer(text=i18n.get("profile-closed"))
+        user.close_profile()
 
     await uow.commit(user)
-    await callback.message.edit_reply_markup(
-        reply_markup=top_users(i18n=i18n, profile=user.profile)
+    await callback.message.edit_text(
+        text=i18n.get(
+            "profile",
+            name=user.mention,
+            id=str(user.id),
+            open="❌" if user.profile else "☑️",
+            balance=user.balance,
+            date=user.created_at,
+        ),
+        reply_markup=profile(i18n=i18n, profile=user.profile),
     )

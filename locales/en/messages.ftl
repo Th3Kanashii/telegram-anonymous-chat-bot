@@ -17,13 +17,14 @@ help = 😍 <b>{ $name }, commands:
         🎲 /dice | <code>dice</code> ❯ roll the dice
         🏆 /top | <code>top</code> ❯ user ranking
 
-        🔗 Project link: <a href='https://github.com/Th3Kanashii/telegram-anonymous-chat-bot'>GitHub</a></b>
+        🔗 Project link: <a href='https://github.com/Th3Kanashii/telegram-anonymous-chat-bot'>🐙 GitHub</a>
+        ❤️ Support the project: <a href='https://buymeacoffee.com/Th3Kanashii'>☕ BuyMeACoffee</a>, <a href='https://ko-fi.com/Th3Kanashii'>🎁 Ko-Fi</a></b>
 
 language = 🌐 <b>{ $name }, what language would you like me to speak?</b>
 
 profile = 👤 <b>{ $name }, <u>Your</u> profile:
           🆔 ❯ <code>{ $id }</code>
-
+          🕶 Hide name in top: { $open }
           💰 Balance: { $balance } cookies
 
           📆 Registration Date: { DATETIME($date) }</b>
@@ -38,6 +39,8 @@ top = 🍪 { $name }, top cookie earners 🍪
       { $tops }
       ❤️ Total users: { $users }
       🪑 Your position in top: { $position }
+
+nothing = This button does nothing 😊
 
 command-language = 🌐 Change language
 command-profile = 👤 Your profile
@@ -55,6 +58,7 @@ stop-btn = 🛑 Cancel search
 next-btn = ➡️ Next companion
 profile-btn = 🔓 Open profile
 close-profile-btn = 🔒 Close profile
+top-btn = 🍪 Top for cookies
 
 search-not-started = 🔍 <b>Start searching for a conversation partner!</b>
 looking-for-a-companion= 🔍 <b>Already looking for <u>you</u> a conversation partner...</b>
@@ -62,8 +66,6 @@ search-companion = 🔍 <b>Searching for <u>you</u> a conversation partner...</b
 next-companion = 🔍 <b>Searching for <u>you</u> a new conversation partner...</b>
 stop-companion = 😔 <b>That's it.. I won't look for anyone else!</b>
 block-companion = 😔 <b>Oops! It seems the interlocutor has blocked the bot</b>
-profile-opened = 🔓 Profile opened
-profile-closed = 🔒 Profile closed
 
 found-companion = 🎁 <b>Found <u>you</u> a conversation partner, enjoy chatting!</b>
 chat-with-companion = 💬 <b>You already have a conversation partner!</b>
