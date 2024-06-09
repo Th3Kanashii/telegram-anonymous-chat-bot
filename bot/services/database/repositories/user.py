@@ -1,5 +1,5 @@
 import secrets
-from typing import List, Optional, cast
+from typing import Dict, List, Optional, cast
 
 from sqlalchemy import Result, Select, and_, func, select
 
@@ -83,3 +83,20 @@ class UserRepository(BaseRepository):
             int,
             await self._session.scalar(select(func.count()).where(DBUser.balance > balance)) + 1,
         )
+
+    async def stats(self, user: DBUser) -> Dict[str, str | int]:
+        """
+        Get the top users.
+
+        :param user: The user.
+        :return: The top users.
+        """
+        position: int = await self.position(balance=user.balance)
+        users: List[tuple[str, bool, int]] = await self.top()
+        top: str = "".join(
+            [
+                f"❯❯ {index + 1}. {name if profile else '🕶'} ⇏ {balance} 🍪\n"
+                for index, (name, profile, balance) in enumerate(users[0:15])
+            ]
+        )
+        return {"tops": top, "name": user.name, "position": position, "users": len(users)}

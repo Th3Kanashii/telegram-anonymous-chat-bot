@@ -17,13 +17,14 @@ help = 😍 <b>{ $name }さん、コマンド:
         🎲 /dice | <code>サイコロ</code> ❯ サイコロを振る
         🏆 /top | <code>トップ</code> ❯ ユーザーのランキング
 
-        🔗 プロジェクトのリンク： <a href='https://github.com/Th3Kanashii/telegram-anonymous-chat-bot'>GitHub</a></b>
+        🔗 プロジェクトのリンク： <a href='https://github.com/Th3Kanashii/telegram-anonymous-chat-bot'>🐙 GitHub</a>
+        ❤️ プロジェクトを支援する: <a href='https://buymeacoffee.com/Th3Kanashii'>☕ BuyMeACoffee</a>, <a href='https://ko-fi.com/Th3Kanashii'>🎁 Ko-Fi</a></b>
 
 language = 🌐 <b>{ $name }、私はどの言語で話すことを望みますか？</b>
 
 profile = 👤 <b>{ $name }, <u>あなたの</u>プロフィール:
           🆔 ❯ <code>{ $id }</code>
-
+          🕶 上部の名前を非表示にする: { $open }
           💰 バランス: { $balance } クッキー
 
           📆 登録日: { DATETIME($date) }</b>
@@ -38,6 +39,8 @@ top = 🍪 { $name }, クッキーのトップ 🍪
       { $tops }
       ❤️ 総ユーザー数: { $users }
       🪑 トップでのあなたの位置: { $position }
+
+nothing = このボタンは何もしません 😊
 
 command-language = 🌐 言語を変更
 command-profile = 👤 あなたのプロフィール
@@ -55,6 +58,7 @@ stop-btn = 🛑 検索をキャンセルする
 next-btn = ➡️ 次の対談者は
 profile-btn = 🔓 プロフィールを開く
 close-profile-btn = 🔒 プロフィールを閉じる
+top-btn = 🍪 クッキーのトップ
 
 search-not-started = 🔍 <b>相手を検索していません。</b>
 looking-for-a-companion= 🔍 <b>すでに相手を探しています。</b>
@@ -62,8 +66,6 @@ search-companion = 🔍 <b>相手を探しています。</b>
 next-companion = 🔍 <b>新しい相手を探しています...</b>
 stop-companion = 😔 <b>以上です。誰も探さないよ！</b>
 block-companion = 😔 <b>おっと！相手がボットをブロックしたようです</b>
-profile-opened = 🔓 プロフィールが公開されています
-profile-closed = 🔒 プロフィールは閉じられました
 
 found-companion = 🎁 <b>相手が見つかりました。楽しい会話を!</b>
 chat-with-companion = 💬 <b>すでに相手がいます。</b>

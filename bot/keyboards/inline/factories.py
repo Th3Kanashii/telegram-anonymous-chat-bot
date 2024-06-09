@@ -9,6 +9,14 @@ class Language(CallbackData, prefix="language"):
     language: str
 
 
+class Profile(CallbackData, prefix="profile"):
+    """
+    Profile callback data
+    """
+
+    action: str
+
+
 class Pagination(CallbackData, prefix="pagination"):
     """
     Pagination callback data

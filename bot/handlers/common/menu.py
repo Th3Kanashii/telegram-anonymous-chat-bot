@@ -1,26 +1,34 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Dict, Final, Optional
+import secrets
+from typing import TYPE_CHECKING, Dict, Final, List, Optional
 
 from aiogram import Bot, F, Router
-from aiogram.exceptions import TelegramForbiddenError
+from aiogram.enums.dice_emoji import DiceEmoji
 from aiogram.filters import Command, or_f
-from aiogram.types import Message, MessageReactionUpdated
+from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram_i18n import I18nContext, LazyProxy
 
-from ..enums import UserStatus
-from ..keyboards import builder_reply, dialog
-from ..utils import find_companion
+from ...enums import UserStatus
+from ...keyboards import (
+    builder_reply,
+    dialog,
+    link_profile,
+    pagination_users,
+    profile,
+    select_language,
+)
+from ...utils import find_companion
 
 if TYPE_CHECKING:
-    from ..services.database import DBUser, Repository, UoW
+    from ...services.database import DBUser, Repository, UoW
 
 flags: Final[Dict[str, str]] = {"throttling_key": "default"}
-chatting_router: Final[Router] = Router(name=__name__)
+router: Final[Router] = Router(name=__name__)
 
 
-@chatting_router.message(or_f(Command("search"), F.text == LazyProxy("search-btn")), flags=flags)
+@router.message(or_f(Command("search"), F.text == LazyProxy("search-btn")), flags=flags)
 async def search_command(
     message: Message, bot: Bot, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW
 ) -> None:
@@ -59,7 +67,7 @@ async def search_command(
     )
 
 
-@chatting_router.message(
+@router.message(
     or_f(Command("stop"), F.text.in_([LazyProxy("stop-btn"), LazyProxy("cancel-btn")])), flags=flags
 )
 async def stop_command(
@@ -111,7 +119,7 @@ async def stop_command(
     await find_companion(bot, i18n, companion, repository, uow)
 
 
-@chatting_router.message(or_f(Command("next"), F.text == LazyProxy("next-btn")), flags=flags)
+@router.message(or_f(Command("next"), F.text == LazyProxy("next-btn")), flags=flags)
 async def next_command(
     message: Message, bot: Bot, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW
 ) -> None:
@@ -162,60 +170,150 @@ async def next_command(
     await find_companion(bot, i18n, user, repository, uow)
 
 
-@chatting_router.message(flags={"throttling_key": "chatting"})
-async def chatting(
-    message: Message, bot: Bot, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW
-) -> None:
+@router.message(Command("language"), flags=flags)
+async def language_command(message: Message, i18n: I18nContext, user: DBUser) -> None:
     """
-    Process the chatting.
+    Handle the /language command.
+    Show the language selection keyboard.
+
+    :param message: The message.
+    :param i18n: The i18n context.
+    :param user: The user.
+    """
+    await message.answer(i18n.get("language", name=user.mention), reply_markup=select_language())
+
+
+@router.message(Command("help"), flags=flags)
+async def help_command(message: Message, i18n: I18nContext, user: DBUser) -> None:
+    """
+    Handle the /help command.
+    Show the help message.
+
+    :param message: The message.
+    :param i18n: The i18n context.
+    :param user: The user.
+    """
+    await message.answer(
+        text=i18n.get("help", name=user.mention), reply_markup=ReplyKeyboardRemove()
+    )
+
+
+@router.message(Command("link"), flags=flags)
+async def link_command(message: Message, bot: Bot, i18n: I18nContext, user: DBUser) -> None:
+    """
+    Handle the /link command.
+    Send link to the companion.
 
     :param message: The message.
     :param bot: The bot.
     :param i18n: The i18n context.
     :param user: The user.
-    :param repository: The repository.
-    :param uow: The unit of work.
     """
     if not user.companion:
-        await message.delete()
+        await message.answer(text=user.mention)
         return
 
-    companion: Optional[DBUser] = await repository.user.get(user_id=user.companion)
-    await i18n.set_locale(locale=companion.locale, companion=companion)
-
-    try:
-        await message.copy_to(chat_id=user.companion, reply_markup=dialog(i18n=i18n))
-    except TelegramForbiddenError:
-        await repository.user.update_companions(
-            user=user,
-            companion=companion,
-            user_status=UserStatus.WAITING,
-            companion_status=UserStatus.OFFLINE,
-            is_stop=True,
-        )
-        await uow.commit(user, companion)
-        await i18n.set_locale(locale=user.locale, user=user)
-        await message.answer(text=i18n.get("block-companion"))
-        await message.answer(
-            text=i18n.get("next-companion"), reply_markup=builder_reply(i18n.get("stop-btn"))
-        )
-        await find_companion(bot, i18n, user, repository, uow)
+    await bot.send_message(
+        chat_id=user.companion,
+        text=i18n.get("send-link"),
+        reply_markup=link_profile(i18n=i18n, url=user.url),
+    )
+    await message.answer(text=i18n.get("companion-linked"), reply_markup=dialog(i18n=i18n))
 
 
-@chatting_router.message_reaction()
-async def chatting_reaction(message: MessageReactionUpdated, bot: Bot, user: DBUser) -> None:
+@router.message(Command("chan"), flags=flags)
+async def chan_command(message: Message, i18n: I18nContext, user: DBUser, uow: UoW) -> None:
     """
-    Process the reaction to the chatting message.
+    Handle the /chan command.
+    Send a random 4chan image.
 
     :param message: The message.
-    :param bot: The bot.
+    :param i18n: The i18n context.
     :param user: The user.
+    :param uow: The unit of work.
     """
-    if not user.companion:
+    if user.balance <= 999:
+        await message.answer(
+            i18n.get("not-enough-balance", name=user.mention, balance=user.balance)
+        )
         return
 
-    await bot.set_message_reaction(
-        chat_id=user.companion,
-        message_id=message.message_id - 1,
-        reaction=message.new_reaction,
+    user.balance -= 999
+    chans: List[str] = [
+        "https://imgur.com/a/suN3hTv",
+        "https://imgur.com/a/lSwCP2O",
+        "https://imgur.com/a/dNWN9Gq",
+    ]
+    chan_index: int = secrets.randbelow(len(chans))
+    await uow.commit(user)
+    await message.answer_photo(
+        photo=chans[chan_index], caption=i18n.get("chans-info", chan=chan_index)
+    )
+
+
+@router.message(Command("profile"), flags=flags)
+async def profile_command(message: Message, i18n: I18nContext, user: DBUser) -> None:
+    """
+    Handle the /profile command.
+    Show the user's profile.
+
+    :param message: The message.
+    :param i18n: The i18n context.
+    :param user: The user.
+    """
+    await message.answer(
+        text=i18n.get(
+            "profile",
+            name=user.mention,
+            id=str(user.id),
+            open="❌" if user.profile else "☑️",
+            balance=user.balance,
+            date=user.created_at,
+        ),
+        reply_markup=profile(i18n=i18n, profile=user.profile),
+    )
+
+
+@router.message(Command("top"), flags=flags)
+async def top_command(
+    message: Message, i18n: I18nContext, user: DBUser, repository: Repository
+) -> None:
+    """
+    Handle the /top command.
+    Show the top users.
+
+    :param message: The message.
+    :param i18n: The i18n context.
+    :param user: The user.
+    :param repository: The repository.
+    """
+    users_stats: Dict[str, str | int] = await repository.user.stats(user=user)
+    await message.answer(
+        text=i18n.get("top", **users_stats),
+        reply_markup=pagination_users(),
+    )
+
+
+@router.message(Command("dice"), flags={"throttling_key": "dice"})
+async def dice_command(
+    message: Message, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW
+) -> None:
+    """
+    Handle the /dice command.
+    Send a dice and add its value to the user's balance.
+
+    :param message: Received message.
+    :param i18n: I18n context.
+    :param user: User from the database.
+    :param repository: The repository.
+    :param uow: Unit of work.
+    """
+    dice: Message = await message.answer_dice(emoji=DiceEmoji.DICE)
+    await asyncio.sleep(2)
+
+    user.balance += dice.dice.value**3
+    await uow.commit(user)
+    position: int = await repository.user.position(balance=user.balance)
+    await dice.reply(
+        text=i18n.get("dice", number=dice.dice.value, balance=user.balance, position=position)
     )
