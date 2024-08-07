@@ -1,11 +1,14 @@
-from .callback import CallbackData
 from .locale import Locale
+from .profile import UserProfile
 from .status import UserStatus
 from .throttle import Throttle
+from .top import Top
+
 
 __all__ = [
     "Locale",
-    "UserStatus",
     "Throttle",
-    "CallbackData",
+    "Top",
+    "UserProfile",
+    "UserStatus",
 ]

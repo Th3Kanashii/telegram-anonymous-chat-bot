@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, cast
+from typing import TYPE_CHECKING, cast
 
-from aiogram.types import User
 from aiogram_i18n.managers import BaseManager
 
+
 if TYPE_CHECKING:
-    from ...services.database import DBUser, UoW
+    from aiogram.types import User
+
+    from bot.services.database import DBUser, UoW
 
 
 class UserManager(BaseManager):
@@ -15,7 +17,9 @@ class UserManager(BaseManager):
     """
 
     async def get_locale(
-        self, event_from_user: Optional[User] = None, user: Optional[DBUser] = None
+        self,
+        event_from_user: User | None = None,
+        user: DBUser | None = None,
     ) -> str:
         """
         Get the user's locale.
@@ -31,7 +35,11 @@ class UserManager(BaseManager):
         return cast(str, self.default_locale)
 
     async def set_locale(
-        self, locale: str, user: DBUser, uow: UoW, companion: Optional[DBUser] = None
+        self,
+        locale: str,
+        user: DBUser,
+        uow: UoW,
+        companion: DBUser | None = None,
     ) -> None:
         """
         Set the user's locale.

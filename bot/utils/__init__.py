@@ -1,7 +1,11 @@
-from .logging import setup_logging
+from .commands import set_commands, set_default_commands
+from .logging import setup_logger
 from .user_matching import find_companion
 
+
 __all__ = [
-    "setup_logging",
     "find_companion",
+    "set_commands",
+    "set_default_commands",
+    "setup_logger",
 ]

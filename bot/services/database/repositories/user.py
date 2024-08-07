@@ -1,10 +1,17 @@
+from __future__ import annotations
+
 import secrets
-from typing import Dict, List, Optional, cast
+from typing import TYPE_CHECKING, Optional, cast
 
-from sqlalchemy import Result, Select, and_, func, select
+from sqlalchemy import and_, func, select
 
-from ....enums import UserStatus
-from ..models import DBUser
+from bot.enums import UserStatus
+from bot.services.database.models import DBUser
+
+
+if TYPE_CHECKING:
+    from sqlalchemy import Result, Select
+
 from .base import BaseRepository
 
 
@@ -13,7 +20,7 @@ class UserRepository(BaseRepository):
     The repository for the users.
     """
 
-    async def get(self, user_id: int) -> Optional[DBUser]:
+    async def get(self, user_id: int) -> DBUser | None:
         """
         Get a user by their ID.
 
@@ -25,7 +32,7 @@ class UserRepository(BaseRepository):
             await self._session.scalar(select(DBUser).where(DBUser.id == user_id)),
         )
 
-    async def get_random_companion(self, user_id: int) -> Optional[DBUser]:
+    async def get_random_companion(self, user_id: int) -> DBUser | None:
         """
         Get a random companion for the user.
 
@@ -33,11 +40,11 @@ class UserRepository(BaseRepository):
         :return: The companion's ID, if found.
         """
         query: Select[tuple[int]] = select(DBUser.id).where(
-            and_(DBUser.status == UserStatus.WAITING, DBUser.id != user_id)
+            and_(DBUser.status == UserStatus.WAITING, DBUser.id != user_id),
         )
         result: Result[tuple[int]] = await self._session.execute(query)
-        companions: Optional[List[int]] = list(result.scalars().all())
-        companion: Optional[int] = secrets.choice(companions) if companions else None
+        companions: list[int] | None = list(result.scalars().all())
+        companion: int | None = secrets.choice(companions) if companions else None
 
         return cast(Optional[DBUser], await self.get(user_id=companion))
 
@@ -47,7 +54,7 @@ class UserRepository(BaseRepository):
         companion: DBUser,
         user_status: UserStatus,
         companion_status: UserStatus,
-        is_stop: Optional[bool] = False,
+        is_stop: bool | None = False,
     ) -> None:
         """
         Update the companions.
@@ -61,14 +68,14 @@ class UserRepository(BaseRepository):
         user.companion, companion.companion = (None, None) if is_stop else (companion.id, user.id)
         user.status, companion.status = user_status.value, companion_status.value
 
-    async def top(self) -> List[tuple[str, bool, int]]:
+    async def top(self) -> list[tuple[str, bool, int]]:
         """
         Get the top users.
 
         :return: The top users.
         """
         result: Result[tuple[str, bool, int]] = await self._session.execute(
-            select(DBUser.name, DBUser.profile, DBUser.balance).order_by(DBUser.balance.desc())
+            select(DBUser.name, DBUser.profile, DBUser.balance).order_by(DBUser.balance.desc()),
         )
         return list(result.all())
 
@@ -84,7 +91,7 @@ class UserRepository(BaseRepository):
             await self._session.scalar(select(func.count()).where(DBUser.balance > balance)) + 1,
         )
 
-    async def stats(self, user: DBUser) -> Dict[str, str | int]:
+    async def stats(self, user: DBUser) -> dict[str, str | int]:
         """
         Get the top users.
 
@@ -92,11 +99,9 @@ class UserRepository(BaseRepository):
         :return: The top users.
         """
         position: int = await self.position(balance=user.balance)
-        users: List[tuple[str, bool, int]] = await self.top()
-        top: str = "".join(
-            [
-                f"❯❯ {index + 1}. {name if profile else '🕶'} ⇏ {balance} 🍪\n"
-                for index, (name, profile, balance) in enumerate(users[0:15])
-            ]
-        )
+        users: list[tuple[str, bool, int]] = await self.top()
+        top: str = "".join([
+            f"❯❯ {index + 1}. {name if profile else '🕶'} ⇏ {balance} 🍪\n"
+            for index, (name, profile, balance) in enumerate(users[0:15])
+        ])
         return {"tops": top, "name": user.name, "position": position, "users": len(users)}

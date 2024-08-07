@@ -1,17 +1,23 @@
-from typing import Optional
+from __future__ import annotations
 
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+from typing import TYPE_CHECKING
+
+from aiogram.types import KeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
-from aiogram_i18n import I18nContext
+
+
+if TYPE_CHECKING:
+    from aiogram.types import ReplyKeyboardMarkup
+    from aiogram_i18n import I18nContext
 
 
 def builder_reply(
     *texts: str,
-    is_persistent: Optional[bool] = None,
-    resize_keyboard: Optional[bool] = True,
-    one_time_keyboard: Optional[bool] = None,
-    input_field_placeholder: Optional[bool] = None,
-    selective: Optional[bool] = None,
+    is_persistent: bool | None = None,
+    resize_keyboard: bool | None = True,
+    one_time_keyboard: bool | None = None,
+    input_field_placeholder: bool | None = None,
+    selective: bool | None = None,
     width: int = 2,
 ) -> ReplyKeyboardMarkup:
     """

@@ -1,25 +1,33 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final, Optional
+from typing import TYPE_CHECKING, Final
 
-from aiogram import Bot, Router
+from aiogram import Router
 from aiogram.exceptions import TelegramForbiddenError
-from aiogram.types import Message, MessageReactionUpdated
-from aiogram_i18n import I18nContext
 
-from ...enums import UserStatus
-from ...keyboards import builder_reply, dialog
-from ...utils import find_companion
+from bot.enums import UserStatus
+from bot.keyboards.reply import builder_reply, dialog
+from bot.utils import find_companion
+
 
 if TYPE_CHECKING:
-    from ...services.database import DBUser, Repository, UoW
+    from aiogram import Bot
+    from aiogram.types import Message, MessageReactionUpdated
+    from aiogram_i18n import I18nContext
+
+    from bot.services.database import DBUser, Repository, UoW
 
 router: Final[Router] = Router(name=__name__)
 
 
 @router.message(flags={"throttling_key": "chatting"})
 async def chatting(
-    message: Message, bot: Bot, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW
+    message: Message,
+    bot: Bot,
+    i18n: I18nContext,
+    user: DBUser,
+    repository: Repository,
+    uow: UoW,
 ) -> None:
     """
     Process the chatting.
@@ -35,7 +43,7 @@ async def chatting(
         await message.delete()
         return
 
-    companion: Optional[DBUser] = await repository.user.get(user_id=user.companion)
+    companion: DBUser | None = await repository.user.get(user_id=user.companion)
     await i18n.set_locale(locale=companion.locale, companion=companion)
 
     try:
@@ -52,7 +60,8 @@ async def chatting(
         await i18n.set_locale(locale=user.locale, user=user)
         await message.answer(text=i18n.get("block-companion"))
         await message.answer(
-            text=i18n.get("next-companion"), reply_markup=builder_reply(i18n.get("stop-btn"))
+            text=i18n.get("next-companion"),
+            reply_markup=builder_reply(i18n.get("stop-btn")),
         )
         await find_companion(bot, i18n, user, repository, uow)
 

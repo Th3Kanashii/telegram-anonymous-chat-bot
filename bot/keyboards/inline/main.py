@@ -1,9 +1,18 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram_i18n import I18nContext
+from __future__ import annotations
 
-from ...enums import CallbackData, Locale
-from .factories import Language, Pagination, Profile
+from typing import TYPE_CHECKING
+
+from aiogram.types import InlineKeyboardButton
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+
+from bot.enums import Locale, Top, UserProfile
+
+from .factory import Language, Pagination, Profile
+
+
+if TYPE_CHECKING:
+    from aiogram.types import InlineKeyboardMarkup
+    from aiogram_i18n import I18nContext
 
 
 def select_language() -> InlineKeyboardMarkup:
@@ -24,7 +33,7 @@ def select_language() -> InlineKeyboardMarkup:
     return keyboard.as_markup()
 
 
-def pagination_users(end_page: bool = False, page: int = 0) -> InlineKeyboardMarkup:
+def pagination_users(*, end_page: bool = False, page: int = 0) -> InlineKeyboardMarkup:
     """
     Pagination keyboard for top users
 
@@ -38,14 +47,14 @@ def pagination_users(end_page: bool = False, page: int = 0) -> InlineKeyboardMar
             InlineKeyboardButton(
                 text="◀️" if page else "🍓",
                 callback_data=(
-                    Pagination(action="prev", page=page).pack() if page else CallbackData.NOTHING
+                    Pagination(action="prev", page=page).pack() if page else Top.NOTHING
                 ),
             ),
-            InlineKeyboardButton(text="👤", callback_data=CallbackData.PROFILE),
+            InlineKeyboardButton(text="👤", callback_data=UserProfile.HOME),
             InlineKeyboardButton(
                 text="▶️" if not end_page else "🍑",
                 callback_data=(
-                    Pagination(action="next", page=page).pack() if not end_page else CallbackData.NOTHING
+                    Pagination(action="next", page=page).pack() if not end_page else Top.NOTHING
                 ),
             ),
         ],
@@ -54,7 +63,7 @@ def pagination_users(end_page: bool = False, page: int = 0) -> InlineKeyboardMar
     return keyboard.as_markup()
 
 
-def profile(i18n: I18nContext, profile: bool) -> InlineKeyboardMarkup:
+def profile(i18n: I18nContext, *, profile: bool) -> InlineKeyboardMarkup:
     """
     Open profile keyboard
 
@@ -68,17 +77,17 @@ def profile(i18n: I18nContext, profile: bool) -> InlineKeyboardMarkup:
         keyboard.add(
             InlineKeyboardButton(
                 text=i18n.get("close-profile-btn"),
-                callback_data=Profile(action=CallbackData.CLOSE_PROFILE).pack(),
-            )
+                callback_data=Profile(action=UserProfile.CLOSE).pack(),
+            ),
         )
     else:
         keyboard.add(
             InlineKeyboardButton(
                 text=i18n.get("profile-btn"),
-                callback_data=Profile(action=CallbackData.OPEN_PROFILE).pack(),
-            )
+                callback_data=Profile(action=UserProfile.OPEN).pack(),
+            ),
         )
-    keyboard.add(InlineKeyboardButton(text=i18n.get("top-btn"), callback_data=CallbackData.TOP))
+    keyboard.add(InlineKeyboardButton(text=i18n.get("top-btn"), callback_data=Top.RATING))
     keyboard.adjust(1)
     return keyboard.as_markup()
 

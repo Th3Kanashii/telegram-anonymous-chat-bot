@@ -1,11 +1,16 @@
-from typing import Any, Awaitable, Callable, Dict, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Awaitable, Callable
 
 from aiogram import BaseMiddleware
 from aiogram.dispatcher.flags import get_flag
-from aiogram.types import Message
 from cachetools import TTLCache
 
-from ...enums import Throttle
+from bot.enums import Throttle
+
+
+if TYPE_CHECKING:
+    from aiogram.types import Message
 
 
 class ThrottlingMiddleware(BaseMiddleware):
@@ -17,7 +22,7 @@ class ThrottlingMiddleware(BaseMiddleware):
         """
         Initializes ThrottlingMiddleware with a specified throttling limit.
         """
-        self.cache: Dict[str, TTLCache] = {
+        self.cache: dict[str, TTLCache] = {
             "dice": TTLCache(maxsize=100, ttl=Throttle.THROTTLE_DICE),
             "chatting": TTLCache(maxsize=100, ttl=Throttle.THROTTLE_CHATTING),
             "default": TTLCache(maxsize=100, ttl=Throttle.DEFAULT),
@@ -27,8 +32,8 @@ class ThrottlingMiddleware(BaseMiddleware):
         self,
         handler: Callable[[Message, dict[str, Any]], Awaitable[Any]],
         event: Message,
-        data: Dict[str, Any],
-    ) -> Optional[Any]:
+        data: dict[str, Any],
+    ) -> Any:
         throttling_key = get_flag(data, "throttling_key")
 
         if throttling_key is not None and throttling_key in self.cache:

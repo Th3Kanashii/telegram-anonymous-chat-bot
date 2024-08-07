@@ -1,19 +1,24 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
-from aiogram import Bot
-from aiogram_i18n import I18nContext
+from bot.enums import UserStatus
+from bot.keyboards.reply import dialog
 
-from ..enums import UserStatus
-from ..keyboards import dialog
 
 if TYPE_CHECKING:
-    from ..services.database import DBUser, Repository, UoW
+    from aiogram import Bot
+    from aiogram_i18n import I18nContext
+
+    from bot.services.database import DBUser, Repository, UoW
 
 
 async def find_companion(
-    bot: Bot, i18n: I18nContext, user: DBUser, repository: Repository, uow: UoW
+    bot: Bot,
+    i18n: I18nContext,
+    user: DBUser,
+    repository: Repository,
+    uow: UoW,
 ) -> bool:
     """
     Find and notify a companion.
@@ -25,7 +30,7 @@ async def find_companion(
     :param uow: The unit of work.
     :return: True if a companion was found, False otherwise.
     """
-    found_companion: Optional[DBUser] = await repository.user.get_random_companion(user_id=user.id)
+    found_companion: DBUser | None = await repository.user.get_random_companion(user_id=user.id)
     if found_companion:
         await repository.user.update_companions(
             user=user,
