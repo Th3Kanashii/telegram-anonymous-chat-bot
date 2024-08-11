@@ -89,7 +89,7 @@ async def pagination(
     position: int = await repository.user.position(balance=user.balance)
     users: list[tuple[str, bool, int]] = await repository.user.top()
 
-    if callback_data.action == Top.PREV_USER:
+    if callback_data.action == Top.NEXT_USER:
         page = page_num + 1 if page_num < len(users) - 1 else page_num
 
     start_index: int = page * 15
