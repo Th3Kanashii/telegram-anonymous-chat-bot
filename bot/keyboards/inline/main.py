@@ -47,14 +47,16 @@ def pagination_users(*, end_page: bool = False, page: int = 0) -> InlineKeyboard
             InlineKeyboardButton(
                 text="◀️" if page else "🍓",
                 callback_data=(
-                    Pagination(action="prev", page=page).pack() if page else Top.NOTHING
+                    Pagination(action=Top.PREV_USER, page=page).pack() if page else Top.NOTHING
                 ),
             ),
             InlineKeyboardButton(text="👤", callback_data=UserProfile.HOME),
             InlineKeyboardButton(
                 text="▶️" if not end_page else "🍑",
                 callback_data=(
-                    Pagination(action="next", page=page).pack() if not end_page else Top.NOTHING
+                    Pagination(action=Top.NEXT_USER, page=page).pack()
+                    if not end_page
+                    else Top.NOTHING
                 ),
             ),
         ],
